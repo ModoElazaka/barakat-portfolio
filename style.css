@@ -50,7 +50,6 @@ body {
     position: relative;
 }
 
-/* الخلفية المتحركة */
 body::before {
     content: '';
     position: fixed;
@@ -67,13 +66,8 @@ body::before {
 }
 
 @keyframes bgMove {
-    0% {
-        transform: translate(0, 0) rotate(0deg) scale(1);
-    }
-
-    100% {
-        transform: translate(50px, 50px) rotate(1deg) scale(1.1);
-    }
+    0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    100% { transform: translate(50px, 50px) rotate(1deg) scale(1.1); }
 }
 
 .container {
@@ -83,7 +77,6 @@ body::before {
     padding: 0 20px;
 }
 
-/* تأثير البلور */
 .glass {
     background: var(--glass-bg);
     backdrop-filter: var(--blur);
@@ -174,15 +167,8 @@ body::before {
     }
 
     @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 }
 
@@ -234,19 +220,43 @@ body::before {
     background: rgba(255, 255, 255, 0.1);
 }
 
+.lang-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 9px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.lang-toggle:hover {
+    background: var(--gradient-accent);
+    border-color: transparent;
+    transform: translateY(-2px);
+}
+
+.lang-toggle i {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
 .menu-toggle:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: rotate(90deg);
 }
 
 @media (max-width: 768px) {
-    .menu-toggle {
-        display: block;
-    }
-
-    .nav {
-        padding: 0 15px;
-    }
+    .menu-toggle { display: block; }
+    .nav { padding: 0 15px; }
 }
 
 /* =================== HERO SECTION =================== */
@@ -281,7 +291,6 @@ body::before {
     }
 }
 
-/* الصورة المتداخلة مع المربع */
 .profile-image-wrapper {
     position: relative;
     margin-top: -40px;
@@ -341,20 +350,10 @@ body::before {
 }
 
 @keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 0.3;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.6;
-        transform: scale(1.02);
-    }
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.02); }
 }
 
-/* محتوى المربع */
 .about-content {
     padding: 50px 50px 50px 80px;
     position: relative;
@@ -373,9 +372,7 @@ body::before {
     }
 }
 
-.about-header {
-    margin-bottom: 40px;
-}
+.about-header { margin-bottom: 40px; }
 
 .hero-title {
     font-size: 3.5rem;
@@ -427,10 +424,7 @@ body::before {
     box-shadow: 0 0 15px var(--accent);
 }
 
-/* النص التمهيدي */
-.about-text {
-    margin-bottom: 40px;
-}
+.about-text { margin-bottom: 40px; }
 
 .intro {
     font-size: 1.2rem;
@@ -456,18 +450,10 @@ body::before {
 }
 
 @keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
-/* إحصائيات الخبرة */
 .experience-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -476,9 +462,7 @@ body::before {
 }
 
 @media (max-width: 768px) {
-    .experience-stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .experience-stats { grid-template-columns: repeat(2, 1fr); }
 }
 
 .stat-item {
@@ -504,9 +488,7 @@ body::before {
     transition: var(--transition);
 }
 
-.stat-item:hover::before {
-    transform: scaleX(1);
-}
+.stat-item:hover::before { transform: scaleX(1); }
 
 .stat-item:hover {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
@@ -533,7 +515,6 @@ body::before {
     font-weight: 500;
 }
 
-/* التفاصيل */
 .about-details {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -542,9 +523,7 @@ body::before {
 }
 
 @media (max-width: 768px) {
-    .about-details {
-        grid-template-columns: 1fr;
-    }
+    .about-details { grid-template-columns: 1fr; }
 }
 
 .detail-column h3 {
@@ -596,9 +575,7 @@ body::before {
     min-width: 20px;
 }
 
-.countries li {
-    justify-content: space-between;
-}
+.countries li { justify-content: space-between; }
 
 .flag-icon {
     font-size: 1.5rem;
@@ -607,7 +584,6 @@ body::before {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* البادجات المحسنة */
 .enhanced-badges {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -616,9 +592,7 @@ body::before {
 }
 
 @media (max-width: 768px) {
-    .enhanced-badges {
-        grid-template-columns: 1fr;
-    }
+    .enhanced-badges { grid-template-columns: 1fr; }
 }
 
 .badge {
@@ -648,33 +622,14 @@ body::before {
     transition: 0.5s;
 }
 
-.badge:hover::before {
-    left: 100%;
-}
+.badge:hover::before { left: 100%; }
 
-.badge i {
-    font-size: 1.2rem;
-}
+.badge i { font-size: 1.2rem; }
 
-.edu-badge {
-    background: linear-gradient(135deg, #00b4d8, #0077b6);
-    color: white;
-}
-
-.project-badge {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
-}
-
-.time-badge {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: white;
-}
-
-.edit-badge {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    color: white;
-}
+.edu-badge { background: linear-gradient(135deg, #00b4d8, #0077b6); color: white; }
+.project-badge { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+.time-badge { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+.edit-badge { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
 
 .badge:hover {
     transform: translateY(-5px) scale(1.05);
@@ -682,7 +637,6 @@ body::before {
     border-color: white;
 }
 
-/* المهارات المصغرة */
 .skills-mini {
     display: flex;
     flex-wrap: wrap;
@@ -774,7 +728,7 @@ body::before {
     border-radius: var(--border-radius);
     border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .category-section::before {
@@ -817,26 +771,55 @@ body::before {
 /* =================== VIDEOS SYSTEM =================== */
 .videos-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 30px;
     margin-top: 20px;
+    padding: 15px 5px 25px 5px;
+    overflow-x: visible;
 }
 
 @media (max-width: 768px) {
     .videos-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
         gap: 20px;
+        padding: 15px 10px 25px 10px;
+        margin: 20px -10px 0 -10px;
+        scrollbar-width: thin;
+        scrollbar-color: #3b82f6 rgba(255, 255, 255, 0.1);
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
     }
+
+    .videos-grid .video-card {
+        flex: 0 0 auto;
+        width: 280px;
+        height: 320px;
+        scroll-snap-align: start;
+    }
+
+    #reels .video-card { height: 300px; }
+    #long .video-card { height: 340px; }
 }
 
 @media (max-width: 480px) {
     .videos-grid {
-        grid-template-columns: 1fr;
-        gap: 25px;
+        gap: 15px;
+        padding: 15px 5px 25px 5px;
+        margin: 20px -5px 0 -5px;
     }
+
+    .videos-grid .video-card {
+        width: 260px;
+        height: 300px;
+    }
+
+    #reels .video-card { height: 280px; }
+    #long .video-card { height: 320px; }
 }
 
-/* بطاقات الفيديو العامة */
 .video-card {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
     border-radius: var(--border-radius-sm);
@@ -862,9 +845,7 @@ body::before {
     z-index: 2;
 }
 
-.video-card:hover::before {
-    transform: scaleX(1);
-}
+.video-card:hover::before { transform: scaleX(1); }
 
 .video-card:hover {
     transform: translateY(-12px) scale(1.03);
@@ -872,19 +853,13 @@ body::before {
     border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* الريلز (بدون عنوان/وصف) */
-#reels .video-card {
-    height: 280px;
-}
+.video-card.reels-video { height: 280px; }
+.video-card.reels-video .video-thumbnail { height: 100%; }
 
-#reels .video-card:hover {
-    transform: translateY(-10px) scale(1.02);
-}
+.video-card.long-video { height: 320px; }
+.video-card.long-video .video-thumbnail { height: 200px; }
 
-/* الفيديوهات الطويلة */
-#long .video-card {
-    height: 320px;
-}
+#long .video-card { height: 320px; }
 
 #long .video-info {
     padding: 25px;
@@ -904,7 +879,6 @@ body::before {
     line-height: 1.4;
 }
 
-/* الصورة المصغرة للفيديو */
 .video-thumbnail {
     height: 200px;
     position: relative;
@@ -912,13 +886,8 @@ body::before {
     background: linear-gradient(45deg, #1e293b, #334155);
 }
 
-#reels .video-thumbnail {
-    height: 100%;
-}
-
-#long .video-thumbnail {
-    height: 200px;
-}
+#reels .video-thumbnail { height: 100%; }
+#long .video-thumbnail { height: 200px; }
 
 .video-thumbnail img {
     width: 100%;
@@ -931,7 +900,35 @@ body::before {
     transform: scale(1.15);
 }
 
-/* زر التشغيل */
+.video-thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(236, 72, 153, 0.25));
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 3rem;
+}
+
+.video-platform-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    z-index: 2;
+    backdrop-filter: blur(4px);
+}
+
 .play-btn {
     position: absolute;
     top: 50%;
@@ -967,22 +964,8 @@ body::before {
     background: #dc2626;
     transform: translate(-50%, -50%) scale(1.2);
     box-shadow: 0 0 40px rgba(239, 68, 68, 0.8);
-    animation: pulse 1s infinite;
 }
 
-@keyframes pulse {
-
-    0%,
-    100% {
-        transform: translate(-50%, -50%) scale(1.1);
-    }
-
-    50% {
-        transform: translate(-50%, -50%) scale(1.2);
-    }
-}
-
-/* التأثير الزجاجي فوق الفيديو */
 .video-overlay {
     position: absolute;
     top: 0;
@@ -995,448 +978,46 @@ body::before {
     z-index: 1;
 }
 
-.video-card:hover .video-overlay {
-    opacity: 0.4;
-}
+.video-card:hover .video-overlay { opacity: 0.4; }
 
-/* رسالة مساعدة للفيديوهات */
-.video-help {
-    padding: 15px;
-    text-align: center;
-    background: rgba(0, 0, 0, 0.2);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-
-.video-help i {
-    margin-left: 5px;
-    color: var(--accent);
-}
-
-/* حالة عدم وجود فيديوهات */
-.empty-state {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 60px 20px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 20px;
-    border: 2px dashed rgba(255, 255, 255, 0.1);
-}
-
-.empty-state i {
-    font-size: 4rem;
-    color: var(--text-muted);
-    margin-bottom: 20px;
-    opacity: 0.5;
-}
-
-.empty-state p {
-    font-size: 1.2rem;
-    color: var(--text-muted);
-    margin-bottom: 20px;
-}
-
-/* =================== CONTACT SECTION =================== */
-.contact-section {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 27, 75, 0.9));
-    position: relative;
-}
-
-.contact-content {
-    padding: 50px;
-    text-align: center;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
-    backdrop-filter: blur(20px);
-}
-
-.contact-info {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    margin-bottom: 40px;
-}
-
-.contact-item {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-    padding: 25px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    transition: var(--transition);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    text-align: right;
-    position: relative;
-    overflow: hidden;
-}
-
-.contact-item::before {
-    content: '';
+/* =================== أزرار التمرير للأقسام =================== */
+.scroll-btn {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, transparent, rgba(59, 130, 246, 0.1), transparent);
-    transform: translateX(-100%);
-    transition: 0.6s;
-}
-
-.contact-item:hover::before {
-    transform: translateX(100%);
-}
-
-.contact-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateY(-8px);
-    border-color: var(--accent-light);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-}
-
-.contact-icon {
-    width: 70px;
-    height: 70px;
-    border-radius: 20px;
-    background: var(--gradient-accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    flex-shrink: 0;
-    box-shadow: 0 10px 20px rgba(0, 180, 216, 0.3);
-}
-
-.contact-details h4 {
-    font-size: 1.3rem;
-    margin-bottom: 8px;
-    color: var(--text-primary);
-    font-weight: 600;
-}
-
-.contact-details p {
-    color: var(--accent-light);
-    font-size: 1.1rem;
-    font-weight: 500;
-}
-
-.social-links {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    flex-wrap: wrap;
-    margin-top: 30px;
-}
-
-.social-link {
-    width: 60px;
-    height: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-    display: flex;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: none;
     align-items: center;
     justify-content: center;
-    font-size: 1.8rem;
-    color: var(--text-primary);
-    text-decoration: none;
-    transition: var(--transition);
-    border: 2px solid transparent;
-    position: relative;
-    overflow: hidden;
+    z-index: 10;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
 }
 
-.social-link::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--gradient-accent);
-    opacity: 0;
-    transition: var(--transition);
-    z-index: -1;
+.scroll-btn:hover {
+    background: rgba(59, 130, 246, 0.9);
+    transform: translateY(-50%) scale(1.1);
 }
 
-.social-link:hover::before {
-    opacity: 1;
-}
-
-.social-link:hover {
-    transform: translateY(-8px) rotate(10deg);
-    border-color: white;
-    box-shadow: 0 15px 30px rgba(0, 180, 216, 0.4);
-}
-
-.social-link:nth-child(1):hover {
-    background: #ff0000;
-}
-
-/* YouTube */
-.social-link:nth-child(2):hover {
-    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-}
-
-/* Instagram */
-.social-link:nth-child(3):hover {
-    background: #0077b5;
-}
-
-/* LinkedIn */
-.social-link:nth-child(4):hover {
-    background: #25d366;
-}
-
-/* WhatsApp */
-
-/* =================== FOOTER =================== */
-.footer {
-    padding: 50px 0;
-    background: rgba(0, 0, 0, 0.4);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
-}
-
-.footer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-}
-
-.footer-content {
-    text-align: center;
-    position: relative;
-}
-
-.footer .logo {
-    margin-bottom: 20px;
-    display: inline-block;
-}
-
-.copyright {
-    color: var(--text-muted);
-    margin: 15px 0;
-    font-size: 1rem;
-}
-
-.tagline {
-    color: var(--accent-light);
-    font-size: 1.1rem;
-    margin: 10px 0 20px;
-    font-style: italic;
-}
-
-.version {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    margin-top: 15px;
-    opacity: 0.7;
-}
-
-/* =================== ANIMATIONS =================== */
-.reveal {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.reveal.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* =================== RESPONSIVE =================== */
-@media (max-width: 1200px) {
-    .container {
-        padding: 0 30px;
-    }
-}
-
-@media (max-width: 992px) {
-    .hero-title {
-        font-size: 2.8rem;
-    }
-
-    .section-title {
-        font-size: 2.4rem;
-    }
-
-    .category-section {
-        padding: 30px;
-    }
-
-    .about-content {
-        padding: 60px 30px 30px;
-    }
-}
+.scroll-btn.prev { right: 10px; }
+.scroll-btn.next { left: 10px; }
 
 @media (max-width: 768px) {
-    .hero-title {
-        font-size: 2.3rem;
-    }
-
-    .section-title {
-        font-size: 2rem;
-    }
-
-    .section {
-        padding: 70px 0;
-    }
-
-    .category-title {
-        font-size: 1.7rem;
-    }
-
-    .videos-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    }
-
-    .contact-info {
-        grid-template-columns: 1fr;
-    }
+    .category-section.scrollable .scroll-btn { display: flex; }
+    .scroll-btn { width: 35px; height: 35px; font-size: 1rem; }
+    .scroll-btn.prev { right: 5px; }
+    .scroll-btn.next { left: 5px; }
 }
 
-@media (max-width: 480px) {
-    .hero-title {
-        font-size: 2rem;
-    }
-
-    .section-title {
-        font-size: 1.8rem;
-    }
-
-    .category-section {
-        padding: 25px 20px;
-    }
-
-    .videos-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .hero-section {
-        padding: 120px 0 40px;
-    }
-
-    .container {
-        padding: 0 20px;
-    }
-}
-
-/* =================== UTILITY CLASSES =================== */
-.text-center {
-    text-align: center;
-}
-
-.text-right {
-    text-align: right;
-}
-
-.text-left {
-    text-align: left;
-}
-
-.mt-1 {
-    margin-top: 10px;
-}
-
-.mt-2 {
-    margin-top: 20px;
-}
-
-.mt-3 {
-    margin-top: 30px;
-}
-
-.mt-4 {
-    margin-top: 40px;
-}
-
-.mt-5 {
-    margin-top: 50px;
-}
-
-.mb-1 {
-    margin-bottom: 10px;
-}
-
-.mb-2 {
-    margin-bottom: 20px;
-}
-
-.mb-3 {
-    margin-bottom: 30px;
-}
-
-.mb-4 {
-    margin-bottom: 40px;
-}
-
-.mb-5 {
-    margin-bottom: 50px;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.visible {
-    display: block !important;
-}
-
-.flex {
-    display: flex;
-}
-
-.flex-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.grid {
-    display: grid;
-}
-
-/* تأثيرات النص */
-.text-gradient {
-    background: var(--gradient-accent);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-
-.text-glow {
-    text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-}
-
-/* تحسينات إضافية */
-@media (max-width: 768px) {
-    .play-btn {
-        width: 50px;
-        height: 50px;
-        font-size: 1.3rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .play-btn {
-        width: 45px;
-        height: 45px;
-        font-size: 1.2rem;
-        border: 2px solid white;
-    }
-
-    .video-help {
-        font-size: 0.8rem;
-        padding: 10px;
-    }
-}
-
-/* =================== REVIEWS SECTION =================== */
+/* =================== REVIEWS =================== */
 .reviews-section {
     background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
     position: relative;
@@ -1474,9 +1055,7 @@ body::before {
     transition: var(--transition);
 }
 
-.review-card:hover::before {
-    transform: scaleX(1);
-}
+.review-card:hover::before { transform: scaleX(1); }
 
 .review-card:hover {
     transform: translateY(-10px);
@@ -1588,7 +1167,6 @@ body::before {
     color: var(--accent);
 }
 
-/* إحصائيات التقييمات */
 .reviews-stats {
     margin-top: 50px;
     padding: 30px;
@@ -1649,27 +1227,12 @@ body::before {
     font-size: 0.95rem;
 }
 
-/* قسم إضافة التقييم */
 .add-review-section {
     text-align: center;
     padding: 40px;
     margin-top: 40px;
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(30, 41, 59, 0.3));
     border: 2px dashed rgba(59, 130, 246, 0.3);
-}
-
-.add-review-section h3 {
-    color: var(--text-primary);
-    margin-bottom: 15px;
-    font-size: 1.8rem;
-}
-
-.add-review-section p {
-    color: var(--text-secondary);
-    margin-bottom: 25px;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .btn-primary {
@@ -1693,7 +1256,7 @@ body::before {
     box-shadow: 0 10px 30px rgba(0, 180, 216, 0.5);
 }
 
-/* نموذج إضافة تقييم */
+/* =================== MODAL =================== */
 .modal {
     display: none;
     position: fixed;
@@ -1756,13 +1319,8 @@ body::before {
     background: rgba(239, 68, 68, 0.1);
 }
 
-.modal-body {
-    padding: 30px;
-}
-
-.form-group {
-    margin-bottom: 25px;
-}
+.modal-body { padding: 30px; }
+.form-group { margin-bottom: 25px; }
 
 .form-group label {
     display: block;
@@ -1793,22 +1351,15 @@ body::before {
     background: rgba(255, 255, 255, 0.08);
 }
 
-.form-group textarea {
-    resize: vertical;
-    min-height: 120px;
-}
+.form-group textarea { resize: vertical; min-height: 120px; }
 
-/* تقييم النجوم */
 .rating-input {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-.stars {
-    display: flex;
-    gap: 5px;
-}
+.stars { display: flex; gap: 5px; }
 
 .stars i {
     font-size: 1.8rem;
@@ -1818,9 +1369,7 @@ body::before {
 }
 
 .stars i:hover,
-.stars i.active {
-    color: #fbbf24;
-}
+.stars i.active { color: #fbbf24; }
 
 #ratingValue {
     color: var(--text-primary);
@@ -1869,593 +1418,173 @@ body::before {
     transition: var(--transition);
 }
 
-.btn-cancel:hover {
-    background: rgba(255, 255, 255, 0.2);
+.btn-cancel:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* =================== CONTACT =================== */
+.contact-section {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 27, 75, 0.9));
+    position: relative;
 }
 
-/* رسالة نجاح */
-.review-success {
-    background: rgba(34, 197, 94, 0.1);
-    border: 1px solid rgba(34, 197, 94, 0.3);
-    border-radius: 12px;
-    padding: 20px;
-    margin: 20px 0;
+.contact-content {
+    padding: 50px;
     text-align: center;
-    display: none;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    backdrop-filter: blur(20px);
 }
 
-.review-success i {
-    color: #22c55e;
+.contact-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    transition: var(--transition);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: right;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-8px);
+    border-color: var(--accent-light);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.contact-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 20px;
+    background: var(--gradient-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 2rem;
-    margin-bottom: 10px;
+    flex-shrink: 0;
+    box-shadow: 0 10px 20px rgba(0, 180, 216, 0.3);
 }
 
-.review-success p {
-    color: #22c55e;
+.contact-details h4 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    color: var(--text-primary);
     font-weight: 600;
 }
 
-/* تحسينات للجوال */
-@media (max-width: 768px) {
-    .reviews-container {
-        grid-template-columns: 1fr;
-        padding: 25px;
-    }
-
-    .review-header {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .review-rating {
-        align-self: flex-start;
-    }
-
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .modal-content {
-        width: 95%;
-        margin: 20px;
-    }
-
-    .form-buttons {
-        flex-direction: column;
-    }
+.contact-details p {
+    color: var(--accent-light);
+    font-size: 1.1rem;
+    font-weight: 500;
 }
 
-@media (max-width: 480px) {
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .review-footer {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
-    }
-
-    .modal-header {
-        padding: 20px;
-    }
-
-    .modal-body {
-        padding: 20px;
-    }
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-top: 30px;
 }
 
-
-/* =================== SCROLLABLE VIDEO SECTIONS =================== */
-
-/* تحسين الشبكة الأساسية */
-.videos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 30px;
-    margin-top: 20px;
-    padding: 15px 5px 25px 5px;
-    overflow-x: visible;
-}
-
-/* جعل الأقسام قابلة للتمرير */
-.category-section {
-    padding: 40px;
-    margin-bottom: 60px;
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(30, 27, 75, 0.7));
-    border-radius: var(--border-radius);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
-    overflow: visible;
-    /* تغيير من hidden إلى visible */
-}
-
-/* ستايلات خاصة للـ Scroll في الجوال */
-@media (max-width: 768px) {
-
-    /* جعل الشبكة أفقية وقابلة للتمرير في الجوال */
-    .videos-grid {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
-        gap: 20px;
-        padding: 15px 10px 25px 10px;
-        margin: 20px -10px 0 -10px;
-        scrollbar-width: thin;
-        scrollbar-color: #3b82f6 rgba(255, 255, 255, 0.1);
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    /* إزالة تأثير flex-wrap للمتصفحات القديمة */
-    .videos-grid::-webkit-scrollbar {
-        height: 8px;
-    }
-
-    .videos-grid::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 4px;
-        margin: 0 10px;
-    }
-
-    .videos-grid::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-        border-radius: 4px;
-    }
-
-    .videos-grid::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    }
-
-    /* بطاقات الفيديو في وضع التمرير الأفقي */
-    .videos-grid .video-card {
-        flex: 0 0 auto;
-        width: 280px;
-        height: 320px;
-        scroll-snap-align: start;
-    }
-
-    #reels .video-card {
-        height: 300px;
-    }
-
-    #long .video-card {
-        height: 340px;
-    }
-
-    /* إخفاء شريط التمرير عندما لا يكون هناك تمرير */
-    .videos-grid:not(:hover)::-webkit-scrollbar-thumb {
-        background: rgba(59, 130, 246, 0.3);
-    }
-}
-
-/* تحسينات للشاشات الصغيرة جداً */
-@media (max-width: 480px) {
-    .videos-grid {
-        gap: 15px;
-        padding: 15px 5px 25px 5px;
-        margin: 20px -5px 0 -5px;
-    }
-
-    .videos-grid .video-card {
-        width: 260px;
-        height: 300px;
-    }
-
-    #reels .video-card {
-        height: 280px;
-    }
-
-    #long .video-card {
-        height: 320px;
-    }
-}
-
-/* تحسينات للشاشات المتوسطة */
-@media (min-width: 769px) and (max-width: 1024px) {
-    .videos-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 25px;
-    }
-}
-
-/* تأثيرات الـ Hover للبطاقات في وضع التمرير */
-.video-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
-}
-
-/* تحسين تأثيرات الصورة المصغرة */
-.video-thumbnail {
-    position: relative;
-    overflow: hidden;
-    border-radius: 12px 12px 0 0;
-}
-
-.video-thumbnail img {
-    transition: transform 0.5s ease;
-}
-
-.video-card:hover .video-thumbnail img {
-    transform: scale(1.1);
-}
-
-/* زر التشغيل في وضع التمرير */
-.play-btn {
-    opacity: 0.8;
-    transform: translate(-50%, -50%) scale(0.9);
-}
-
-.video-card:hover .play-btn {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.1);
-}
-
-/* رسالة توضيحية للتمرير */
-.scroll-hint {
-    display: none;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    margin-top: 10px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.scroll-hint i {
-    margin-left: 5px;
-    color: var(--accent);
-    animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-
-    0%,
-    100% {
-        transform: translateX(0);
-    }
-
-    50% {
-        transform: translateX(-5px);
-    }
-}
-
-@media (max-width: 768px) {
-    .scroll-hint {
-        display: block;
-    }
-}
-
-/* إضافة تلميحات للتمرير في الجوال */
-.category-section::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 40px;
-    background: linear-gradient(90deg, transparent, rgba(30, 41, 59, 0.8));
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.category-section.scrollable::after {
-    opacity: 1;
-}
-
-@media (max-width: 768px) {
-    .category-section::after {
-        opacity: 1;
-    }
-}
-
-
-/* =================== SCROLLABLE VIDEO SECTIONS =================== */
-
-/* تحسين الشبكة الأساسية */
-.videos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 30px;
-    margin-top: 20px;
-    padding: 15px 5px 25px 5px;
-    overflow-x: visible;
-}
-
-/* جعل الأقسام قابلة للتمرير */
-.category-section {
-    padding: 40px;
-    margin-bottom: 60px;
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(30, 27, 75, 0.7));
-    border-radius: var(--border-radius);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
-    overflow: visible;
-    /* تغيير من hidden إلى visible */
-}
-
-/* ستايلات خاصة للـ Scroll في الجوال */
-@media (max-width: 768px) {
-
-    /* جعل الشبكة أفقية وقابلة للتمرير في الجوال */
-    .videos-grid {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
-        gap: 20px;
-        padding: 15px 10px 25px 10px;
-        margin: 20px -10px 0 -10px;
-        scrollbar-width: thin;
-        scrollbar-color: #3b82f6 rgba(255, 255, 255, 0.1);
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    /* إزالة تأثير flex-wrap للمتصفحات القديمة */
-    .videos-grid::-webkit-scrollbar {
-        height: 8px;
-    }
-
-    .videos-grid::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 4px;
-        margin: 0 10px;
-    }
-
-    .videos-grid::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-        border-radius: 4px;
-    }
-
-    .videos-grid::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    }
-
-    /* بطاقات الفيديو في وضع التمرير الأفقي */
-    .videos-grid .video-card {
-        flex: 0 0 auto;
-        width: 280px;
-        height: 320px;
-        scroll-snap-align: start;
-    }
-
-    #reels .video-card {
-        height: 300px;
-    }
-
-    #long .video-card {
-        height: 340px;
-    }
-
-    /* إخفاء شريط التمرير عندما لا يكون هناك تمرير */
-    .videos-grid:not(:hover)::-webkit-scrollbar-thumb {
-        background: rgba(59, 130, 246, 0.3);
-    }
-}
-
-/* تحسينات للشاشات الصغيرة جداً */
-@media (max-width: 480px) {
-    .videos-grid {
-        gap: 15px;
-        padding: 15px 5px 25px 5px;
-        margin: 20px -5px 0 -5px;
-    }
-
-    .videos-grid .video-card {
-        width: 260px;
-        height: 300px;
-    }
-
-    #reels .video-card {
-        height: 280px;
-    }
-
-    #long .video-card {
-        height: 320px;
-    }
-}
-
-/* تحسينات للشاشات المتوسطة */
-@media (min-width: 769px) and (max-width: 1024px) {
-    .videos-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 25px;
-    }
-}
-
-/* تأثيرات الـ Hover للبطاقات في وضع التمرير */
-.video-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
-}
-
-/* تحسين تأثيرات الصورة المصغرة */
-.video-thumbnail {
-    position: relative;
-    overflow: hidden;
-    border-radius: 12px 12px 0 0;
-}
-
-.video-thumbnail img {
-    transition: transform 0.5s ease;
-}
-
-.video-card:hover .video-thumbnail img {
-    transform: scale(1.1);
-}
-
-/* زر التشغيل في وضع التمرير */
-.play-btn {
-    opacity: 0.8;
-    transform: translate(-50%, -50%) scale(0.9);
-}
-
-.video-card:hover .play-btn {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.1);
-}
-
-/* رسالة توضيحية للتمرير */
-.scroll-hint {
-    display: none;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    margin-top: 10px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.scroll-hint i {
-    margin-left: 5px;
-    color: var(--accent);
-    animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-
-    0%,
-    100% {
-        transform: translateX(0);
-    }
-
-    50% {
-        transform: translateX(-5px);
-    }
-}
-
-@media (max-width: 768px) {
-    .scroll-hint {
-        display: block;
-    }
-}
-
-/* إضافة تلميحات للتمرير في الجوال */
-.category-section::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 40px;
-    background: linear-gradient(90deg, transparent, rgba(30, 41, 59, 0.8));
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.category-section.scrollable::after {
-    opacity: 1;
-}
-
-@media (max-width: 768px) {
-    .category-section::after {
-        opacity: 1;
-    }
-}
-
-/* =================== SCROLL BUTTONS =================== */
-
-.scroll-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    background: rgba(30, 41, 59, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+.social-link {
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: none;
-    /* مخفي افتراضياً */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: var(--transition);
+    border: 2px solid transparent;
 }
 
-.scroll-btn:hover {
-    background: rgba(59, 130, 246, 0.9);
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+.social-link:hover {
+    transform: translateY(-8px) rotate(10deg);
+    border-color: white;
+    box-shadow: 0 15px 30px rgba(0, 180, 216, 0.4);
 }
 
-.scroll-btn.prev {
-    right: 10px;
+/* الألوان الخاصة الدقيقة بأيقونات التواصل */
+.social-link:has(.fa-tiktok):hover { background: #000000; }
+.social-link:has(.fa-instagram):hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+.social-link:has(.fa-linkedin):hover { background: #0077b5; }
+.social-link:has(.fa-whatsapp):hover { background: #25d366; }
+.social-link:has(.fa-youtube):hover { background: #ff0000; }
+
+/* =================== FOOTER =================== */
+.footer {
+    padding: 50px 0;
+    background: rgba(0, 0, 0, 0.4);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
 }
 
-.scroll-btn.next {
-    left: 10px;
-}
-
-/* إظهار الأزرار فقط عند الحاجة في الجوال */
-@media (max-width: 768px) {
-    .category-section.scrollable .scroll-btn {
-        display: flex;
-    }
-
-    /* تحسين المظهر في الجوال */
-    .scroll-btn {
-        width: 35px;
-        height: 35px;
-        font-size: 1rem;
-    }
-
-    .scroll-btn.prev {
-        right: 5px;
-    }
-
-    .scroll-btn.next {
-        left: 5px;
-    }
-}
-
-/* تأثيرات التمرير النشط */
-.videos-grid.active {
-    cursor: grabbing;
-    cursor: -webkit-grabbing;
-    user-select: none;
-}
-
-/* مؤشر التمرير */
-.scroll-indicator {
+.footer::before {
+    content: '';
     position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 5px;
-    z-index: 5;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
 }
 
-.scroll-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transition: all 0.3s ease;
+.footer-content { text-align: center; position: relative; }
+.footer .logo { margin-bottom: 20px; display: inline-block; }
+.copyright { color: var(--text-muted); margin: 15px 0; font-size: 1rem; }
+.tagline { color: var(--accent-light); font-size: 1.1rem; margin: 10px 0 20px; font-style: italic; }
+.version { color: var(--text-muted); font-size: 0.9rem; margin-top: 15px; opacity: 0.7; }
+
+.admin-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 18px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    opacity: 0.45;
+    text-decoration: none;
+    transition: var(--transition-fast);
 }
 
-.scroll-dot.active {
-    background: var(--accent);
-    transform: scale(1.2);
+.admin-link:hover { opacity: 1; color: var(--accent-light); }
+
+/* =================== ANIMATIONS =================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+.reveal.show { opacity: 1; transform: translateY(0); }
 
 .note {
     background: #1e293b;
-    border-width: 100px;
-    padding-inline: 5px;
-    font-size: small;
-
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    display: inline-block;
+    margin-top: 8px;
 }
+
+/* =================== LTR SUPPORT =================== */
+[dir="ltr"] body { direction: ltr; text-align: left; }
+[dir="ltr"] .profile-image-wrapper { margin-right: 0; margin-left: -40px; }
+[dir="ltr"] .intro { border-right: none; border-left: 4px solid var(--accent); }
+[dir="ltr"] .category-description { padding-right: 0; border-right: none; padding-left: 10px; border-left: 3px solid rgba(255, 255, 255, 0.1); }
+[dir="ltr"] .contact-item { text-align: left; }
+[dir="ltr"] .rating-text { margin-right: 0; margin-left: 8px; }
+[dir="ltr"] .review-text { padding-right: 0; padding-left: 15px; }
+[dir="ltr"] .review-text::before { right: auto; left: 0; }

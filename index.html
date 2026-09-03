@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <title>Mahmoud Barakat | Video Editor</title>
 
     <!-- الروابط الخارجية -->
@@ -20,60 +21,140 @@
 
     <!-- مشغل الفيديو -->
     <style>
+        /* ================= مشغل الفيديو المتجاوب للجوال والكمبيوتر ================= */
         .video-player-modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
+            inset: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.98);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 10000;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(20px);
-            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 15px;
+            box-sizing: border-box;
         }
 
         .video-player-content {
-            width: 98%;
-            max-width: 1600px;
-            height: 90vh;
-            max-height: 900px;
-            background: #0f172a;
-            border-radius: 25px;
+            background: #000;
+            border-radius: 20px;
             overflow: hidden;
             position: relative;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        /* الفيديوهات الطويلة (عرضي 16:9) */
+        .video-player-content.aspect-long {
+            width: min(94vw, 1000px);
+            aspect-ratio: 16 / 9;
+            max-height: 85vh;
+        }
+
+        /* الريلز والشورتس (طولي 9:16) */
+        .video-player-content.aspect-short {
+            height: min(88vh, 780px);
+            aspect-ratio: 9 / 16;
+            width: auto;
+            max-width: 95vw;
         }
 
         .video-player-iframe {
             width: 100%;
-            height: 700px;
+            height: 100%;
             border: none;
+            display: block;
             background: #000;
         }
 
+        /* زر إغلاق سهل الضغط */
         .close-video-player {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 15px;
+            left: 15px;
             background: rgba(239, 68, 68, 0.9);
             color: white;
             border: none;
-            width: 50px;
-            height: 50px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             cursor: pointer;
-            z-index: 10001;
+            z-index: 10002;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
-            border: 2px solid white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .close-video-player:active {
+            transform: scale(0.9);
+            background: #dc2626;
+        }
+
+        /* نافذة العنوان السفلية */
+        .video-info-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            padding: 15px 20px;
+            color: white;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .video-info-overlay h3 {
+            font-size: 1.1rem;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        /* ================= شاشات الجوال الصغيرة (أقل من 768px) ================= */
+        @media (max-width: 768px) {
+            .video-player-modal {
+                padding: 0;
+                /* استغلال الشاشة بالكامل */
+            }
+
+            /* الريلز على الجوال يملأ الشاشة رأسياً تماماً مثل تيك توك وانستقرام */
+            .video-player-content.aspect-short {
+                width: 100vw;
+                height: 100dvh;
+                /* dvh لضبط شريط المتصفح السفلي */
+                max-height: 100dvh;
+                border-radius: 0;
+                border: none;
+            }
+
+            /* الفيديوهات الطويلة على الجوال تتمركز بنسبة 16:9 طبيعية */
+            .video-player-content.aspect-long {
+                width: 100vw;
+                aspect-ratio: 16 / 9;
+                height: auto;
+                border-radius: 0;
+                border: none;
+            }
+
+            .close-video-player {
+                top: max(15px, env(safe-area-inset-top));
+                left: 15px;
+                width: 42px;
+                height: 42px;
+                font-size: 1.2rem;
+                background: rgba(0, 0, 0, 0.6);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+            }
         }
 
         .close-video-player:hover {
@@ -91,6 +172,7 @@
             padding: 30px;
             color: white;
             z-index: 10;
+            pointer-events: none;
         }
 
         .video-info-overlay h3 {
@@ -106,22 +188,124 @@
             line-height: 1.6;
         }
 
-        /* مؤشر التحميل */
+        .video-external-link {
+            position: absolute;
+            bottom: 16px;
+            inset-inline-end: 16px;
+            z-index: 10;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            text-decoration: none;
+            padding: 9px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(6px);
+            transition: all 0.25s ease;
+        }
+
+        .video-external-link[hidden] {
+            display: none;
+        }
+
+        .video-external-link:hover {
+            background: var(--accent, #3b82f6);
+            transform: translateY(-2px);
+        }
+
         .video-loading {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
         }
 
         .video-loading .spinner {
-            width: 60px;
-            height: 60px;
+            width: 56px;
+            height: 56px;
             border: 4px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             border-top-color: #3b82f6;
             animation: spin 1s linear infinite;
+        }
+
+        .video-loading span {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        .video-error-state {
+            display: none;
+            position: absolute;
+            inset: 0;
+            z-index: 6;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            gap: 16px;
+            background: #0f172a;
+        }
+
+        .video-error-state.show {
+            display: flex;
+        }
+
+        .video-error-state i.error-icon {
+            font-size: 2.6rem;
+            color: #f59e0b;
+        }
+
+        .video-error-state h4 {
+            color: #fff;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .video-error-state p {
+            color: #94a3b8;
+            font-size: 0.92rem;
+            max-width: 380px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .video-error-state .watch-external-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--gradient-accent, linear-gradient(135deg, #3b82f6, #6366f1));
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-top: 6px;
+            transition: transform 0.25s ease;
+        }
+
+        .video-error-state .watch-external-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .video-player-content:has(.video-error-state.show) {
+            aspect-ratio: auto !important;
+            width: min(94vw, 420px) !important;
+            height: auto !important;
+            min-height: 340px !important;
+            max-height: 90vh !important;
+            border-radius: 20px !important;
         }
 
         @keyframes spin {
@@ -140,62 +324,65 @@
             }
         }
 
-        /* تحسينات للجوال */
-        @media (max-width: 992px) {
-            .video-player-content {
-                width: 98%;
-                height: 80vh;
-                max-height: 600px;
-                border-radius: 20px;
-            }
-
-            .video-info-overlay {
-                padding: 20px;
-            }
-
-            .video-info-overlay h3 {
-                font-size: 1.5rem;
-            }
-        }
-
         @media (max-width: 768px) {
+            .video-player-modal {
+                padding: 0;
+            }
+
             .video-player-content {
-                width: 100%;
-                height: 70vh;
-                max-height: 500px;
-                border-radius: 15px;
+                width: 100vw;
+                height: 100vh;
+                max-height: 100vh;
+                aspect-ratio: auto;
+                border-radius: 0;
+            }
+
+            .video-player-content.aspect-short {
+                width: 100vw;
+                height: 100vh;
+            }
+
+            .video-player-content.aspect-long {
+                width: 100vw;
+                aspect-ratio: 16 / 9;
+                height: auto;
+                max-height: 100vh;
+                align-self: center;
             }
 
             .close-video-player {
                 width: 40px;
                 height: 40px;
                 font-size: 1.2rem;
-                top: 15px;
-                left: 15px;
+                top: env(safe-area-inset-top, 14px);
+                left: 14px;
             }
 
             .video-info-overlay {
-                padding: 15px;
+                padding: 16px;
             }
 
             .video-info-overlay h3 {
-                font-size: 1.3rem;
+                font-size: 1.15rem;
+            }
+
+            .video-info-overlay p {
+                font-size: 0.95rem;
+            }
+
+            .video-external-link {
+                bottom: 14px;
+                font-size: 0.8rem;
+                padding: 8px 14px;
             }
         }
 
-        /* حل شامل لإخفاء Scrollbar */
         .videos-grid {
-            /* هذه السطرين مهمين جداً */
             -ms-overflow-style: none;
-            /* IE و Edge */
             scrollbar-width: none;
-            /* Firefox */
-
-            /* هذه للسحب في الجوال */
             -webkit-overflow-scrolling: touch;
         }
 
-        /* هذا لـ Chrome, Safari, Opera */
         .videos-grid::-webkit-scrollbar {
             display: none !important;
             width: 0 !important;
@@ -203,14 +390,26 @@
             background: transparent !important;
         }
 
-        /* هذا يضمن أن التمرير يعمل */
-        .videos-grid {
-            overflow-x: auto;
-            cursor: grab;
+        /* إخفاء مؤشر التحميل تماماً */
+        .video-loading {
+            display: none !important;
         }
 
-        .videos-grid:active {
-            cursor: grabbing;
+        /* جعل الحاوية والـ iframe يملآن المساحة بنسبة 100% بدون أي فراغات */
+        #videoPlayerContainer {
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+
+        .video-player-iframe {
+            width: 100% !important;
+            height: 100% !important;
+            border: none !important;
+            display: block !important;
         }
     </style>
 </head>
@@ -218,11 +417,29 @@
 <body>
     <!-- مشغل الفيديو -->
     <div id="videoPlayerModal" class="video-player-modal">
-        <div class="video-player-content">
-            <button class="close-video-player" id="closeVideoPlayer">
+        <div class="video-player-content" id="videoPlayerContent">
+            <button class="close-video-player" id="closeVideoPlayer" aria-label="إغلاق">
                 <i class="fas fa-times"></i>
             </button>
+            <div class="video-loading" id="videoLoading">
+                <div class="spinner"></div>
+                <span data-i18n="player.loading">جاري تحميل الفيديو...</span>
+            </div>
+            <div class="video-error-state" id="videoErrorState">
+                <i class="fas fa-triangle-exclamation error-icon"></i>
+                <h4 id="videoErrorTitle" data-i18n="player.error.title">تعذّر تشغيل الفيديو هنا</h4>
+                <p id="videoErrorMessage" data-i18n="player.error.generic">قد يكون صاحب الفيديو قيّد تشغيله خارج
+                    منصته، أو أن هناك مشكلة مؤقتة. جرّب مشاهدته مباشرة من المصدر:</p>
+                <a href="#" target="_blank" rel="noopener" class="watch-external-btn" id="videoErrorLink">
+                    <i class="fas fa-arrow-up-right-from-square"></i>
+                    <span id="videoErrorLinkLabel" data-i18n="player.watchOn">مشاهدة على المنصة الأصلية</span>
+                </a>
+            </div>
             <div id="videoPlayerContainer"></div>
+            <a href="#" target="_blank" rel="noopener" class="video-external-link" id="videoExternalLink" hidden>
+                <i class="fas fa-arrow-up-right-from-square"></i>
+                <span id="videoExternalLinkLabel" data-i18n="player.watchOn">مشاهدة على المنصة الأصلية</span>
+            </a>
             <div class="video-info-overlay" id="videoInfoOverlay" style="display: none;">
                 <h3 id="videoPlayerTitle"></h3>
                 <p id="videoPlayerDescription"></p>
@@ -238,14 +455,17 @@
                     <span>⚡ LIGHTNING</span>
                 </div>
                 <nav class="nav-links">
-                    <a href="#home" class="nav-link active">الرئيسية</a>
-                    <a href="#home" class="nav-link">عنّي</a>
-                    <a href="#reels" class="nav-link">الريلز</a>
-                    <a href="#long" class="nav-link">الفيديوهات الطويلة</a>
-                    <a href="#reviews" class="nav-link">التقييمات</a>
-                    <a href="#contact" class="nav-link">تواصل معي</a>
+                    <a href="#home" class="nav-link active" data-i18n="nav.home">الرئيسية</a>
+                    <a href="#home" class="nav-link" data-i18n="nav.about">عنّي</a>
+                    <a href="#reels" class="nav-link" data-i18n="nav.reels">الريلز</a>
+                    <a href="#long" class="nav-link" data-i18n="nav.long">الفيديوهات الطويلة</a>
+                    <a href="#reviews" class="nav-link" data-i18n="nav.reviews">التقييمات</a>
+                    <a href="#contact" class="nav-link" data-i18n="nav.contact">تواصل معي</a>
                 </nav>
-                <button class="menu-toggle" id="menuToggle">
+                <button class="lang-toggle" id="langToggle" type="button" title="Switch language">
+                    <i class="fas fa-globe"></i> <span id="langToggleLabel">EN</span>
+                </button>
+                <button class="menu-toggle" id="menuToggle" aria-label="القائمة">
                     <i class="fas fa-bars"></i>
                 </button>
             </div>
@@ -256,9 +476,7 @@
     <section id="home" class="hero-section">
         <div class="container">
             <div class="hero-content">
-                <!-- المربع الكبير "عني" -->
                 <div class="about-card glass reveal">
-                    <!-- الصورة خارج المربع ولكن متداخلة معه -->
                     <div class="profile-container">
                         <div class="profile-image-wrapper">
                             <div class="profile-image">
@@ -267,7 +485,6 @@
                             </div>
                         </div>
 
-                        <!-- المحتوى داخل المربع -->
                         <div class="about-content">
                             <div class="about-header">
                                 <h1 dir="rtl" class="hero-title">Mahmoud <span class="highlight">Barakat</span></h1>
@@ -283,115 +500,114 @@
                             <div class="about-text">
                                 <p class="intro">
                                     <i class="fas fa-quote-right quote-icon"></i>
-                                    محرر فيديو وموشن ديزاينر وصانع محتوى، متخصص في إنتاج فيديوهات قصيرة وطويلة بجودة
-                                    عالية تناسب المنصات المختلفة. أمتلك خبرة في العمل مع عيادات طبية، علامات تجارية،
-                                    وصناع محتوى من دول متعددة. أؤمن أن الفيديو الناجح لا يعتمد فقط على المونتاج، بل على
-                                    فهم الرسالة وتحويلها إلى تجربة بصرية مؤثرة.
+                                    <span data-i18n="hero.intro">محرر فيديو وموشن ديزاينر وصانع محتوى، متخصص في إنتاج
+                                        فيديوهات قصيرة وطويلة بجودة
+                                        عالية تناسب المنصات المختلفة. أمتلك خبرة في العمل مع عيادات طبية، علامات تجارية،
+                                        وصناع محتوى من دول متعددة. أؤمن أن الفيديو الناجح لا يعتمد فقط على المونتاج، بل
+                                        على
+                                        فهم الرسالة وتحويلها إلى تجربة بصرية مؤثرة.</span>
                                 </p>
 
                                 <div class="experience-stats">
                                     <div class="stat-item">
                                         <div class="stat-number">3+</div>
-                                        <div class="stat-label">سنوات خبرة</div>
+                                        <div class="stat-label" data-i18n="hero.stat.years">سنوات خبرة</div>
                                     </div>
                                     <div class="stat-item">
                                         <div class="stat-number">102</div>
-                                        <div class="stat-label">مشروع في 2025</div>
+                                        <div class="stat-label" data-i18n="hero.stat.projects">مشروع في 2025</div>
                                     </div>
                                     <div class="stat-item">
                                         <div class="stat-number">100%</div>
-                                        <div class="stat-label">تسليم في الوقت</div>
+                                        <div class="stat-label" data-i18n="hero.stat.ontime">تسليم في الوقت</div>
                                     </div>
                                     <div class="stat-item">
                                         <div class="stat-number">∞</div>
-                                        <div class="stat-label">إبداع مستمر</div>
+                                        <div class="stat-label" data-i18n="hero.stat.creativity">إبداع مستمر</div>
                                     </div>
                                 </div>
 
                                 <div class="about-details">
                                     <div class="detail-column">
-                                        <h3><i class="fas fa-bullseye"></i> تخصصاتي</h3>
+                                        <h3><i class="fas fa-bullseye"></i> <span
+                                                data-i18n="hero.specialties.title">تخصصاتي</span></h3>
                                         <ul class="specializations">
-                                            <li><i class="fas fa-check-circle"></i> تحرير الفيديو الاحترافي</li>
-                                            <li><i class="fas fa-check-circle"></i> تصميم موشن جرافيك</li>
-                                            <li><i class="fas fa-check-circle"></i> صناعة الريلز والمحتوى القصير</li>
-                                            <li><i class="fas fa-check-circle"></i> المحتوى التعليمي والتوضيحي</li>
+                                            <li><i class="fas fa-check-circle"></i> <span
+                                                    data-i18n="hero.specialties.1">تحرير الفيديو الاحترافي</span></li>
+                                            <li><i class="fas fa-check-circle"></i> <span
+                                                    data-i18n="hero.specialties.2">تصميم موشن جرافيك</span></li>
+                                            <li><i class="fas fa-check-circle"></i> <span
+                                                    data-i18n="hero.specialties.3">صناعة الريلز والمحتوى القصير</span>
+                                            </li>
+                                            <li><i class="fas fa-check-circle"></i> <span
+                                                    data-i18n="hero.specialties.4">المحتوى التعليمي والتوضيحي</span>
+                                            </li>
                                         </ul>
                                     </div>
 
                                     <div class="detail-column">
-                                        <h3><i class="fas fa-globe-africa"></i> العمل الدولي</h3>
+                                        <h3><i class="fas fa-globe-africa"></i> <span
+                                                data-i18n="hero.international.title">العمل الدولي</span></h3>
                                         <ul class="countries">
-                                            <li><span class="flag-icon flag-icon-eg"></span> مصر</li>
-                                            <li><span class="flag-icon flag-icon-sa"></span> السعودية</li>
-                                            <li><span class="flag-icon flag-icon-ae"></span> الإمارات</li>
-                                            <li><span class="flag-icon flag-icon-bh"></span> البحرين</li>
+                                            <li><span class="flag-icon flag-icon-eg"></span> <span
+                                                    data-i18n="hero.country.eg">مصر</span></li>
+                                            <li><span class="flag-icon flag-icon-sa"></span> <span
+                                                    data-i18n="hero.country.sa">السعودية</span></li>
+                                            <li><span class="flag-icon flag-icon-ae"></span> <span
+                                                    data-i18n="hero.country.ae">الإمارات</span></li>
+                                            <li><span class="flag-icon flag-icon-bh"></span> <span
+                                                    data-i18n="hero.country.bh">البحرين</span></li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- البادجات المحسنة -->
                             <div class="badges enhanced-badges">
                                 <span class="badge edu-badge">
                                     <i class="fas fa-video"></i>
-                                    صانع محتوى تعليمي
+                                    <span data-i18n="hero.badge.edu">صانع محتوى تعليمي</span>
                                 </span>
                                 <span class="badge project-badge">
                                     <i class="fas fa-trophy"></i>
-                                    102 مشروع منجز في 2025
+                                    <span data-i18n="hero.badge.projects">102 مشروع منجز في 2025</span>
                                 </span>
                                 <span class="badge time-badge">
                                     <i class="fas fa-clock"></i>
-                                    تسليم في الوقت المحدد
+                                    <span data-i18n="hero.badge.ontime">تسليم في الوقت المحدد</span>
                                 </span>
                                 <span class="badge edit-badge">
                                     <i class="fas fa-computer"></i>
-                                    محرر فيديو معتمد
+                                    <span data-i18n="hero.badge.editor">محرر فيديو معتمد</span>
                                 </span>
                             </div>
 
-                            <!-- المهارات -->
                             <div class="skills-mini">
-                                <!-- Premiere Pro -->
                                 <div class="skill-tag">
-                                    <i class="fas fa-film" style="color: #ea77d7; margin-right: 8px;"></i>
+                                    <i class="fas fa-film skill-icon" style="color: #ea77d7;"></i>
                                     Premiere Pro
                                 </div>
-
-                                <!-- After Effects -->
                                 <div class="skill-tag">
-                                    <i class="fas fa-star" style="color: #d291ff; margin-right: 8px;"></i>
+                                    <i class="fas fa-star skill-icon" style="color: #d291ff;"></i>
                                     After Effects
                                 </div>
-
-                                <!-- DaVinci Resolve -->
                                 <div class="skill-tag">
-                                    <i class="fas fa-palette" style="color: #ff5252; margin-right: 8px;"></i>
+                                    <i class="fas fa-palette skill-icon" style="color: #ff5252;"></i>
                                     DaVinci Resolve
                                 </div>
-
-                                <!-- Motion Graphics -->
                                 <div class="skill-tag">
-                                    <i class="fas fa-play-circle" style="color: #00bfff; margin-right: 8px;"></i>
+                                    <i class="fas fa-play-circle skill-icon" style="color: #00bfff;"></i>
                                     Motion Graphics
                                 </div>
-
-                                <!-- Color Grading -->
                                 <div class="skill-tag">
-                                    <i class="fas fa-fill-drip" style="color: #ffa500; margin-right: 8px;"></i>
+                                    <i class="fas fa-fill-drip skill-icon" style="color: #ffa500;"></i>
                                     Color Grading
                                 </div>
-
-                                <!-- Photoshop -->
                                 <div class="skill-tag">
-                                    <i class="fas fa-image" style="color: #31a8ff; margin-right: 8px;"></i>
+                                    <i class="fas fa-image skill-icon" style="color: #31a8ff;"></i>
                                     Photoshop
                                 </div>
-
-                                <!-- CapCut -->
                                 <div class="skill-tag">
-                                    <i class="fas fa-scissors" style="color: #00c853; margin-right: 8px;"></i>
+                                    <i class="fas fa-scissors skill-icon" style="color: #00c853;"></i>
                                     CapCut
                                 </div>
                             </div>
@@ -401,206 +617,15 @@
             </div>
         </div>
     </section>
-    <p class="section-subtitle reveal">جميع الأعمال المعروضه هي جزء صغير فقط من اعمالي التي راقت لي وليس بالضروره ان
-        تكون
-        راقت لك , لذا ان كنت تبحث عن شئ معين لا تتردد بمراسلتي</p>
-
+    <p class="section-subtitle reveal" data-i18n="hero.worksNote">جميع الأعمال المعروضه هي جزء صغير فقط من اعمالي التي
+        راقت لي وليس بالضروره ان تكون راقت لك , لذا ان كنت تبحث عن شئ معين لا تتردد بمراسلتي</p>
 
     <!-- ================= REELS SECTION ================= -->
     <section id="reels" class="section">
         <div class="container">
             <h2 class="section-title reveal">Reels / Short Videos</h2>
-            <p class="section-subtitle reveal">أعمالي في الريلز والمقاطع القصيرة</p>
-
-            <!-- قسم Dental Motion Graphics -->
-            <div class="category-section glass reveal">
-                <h3 class="category-title">
-                    <i class="fas fa-tooth"></i>
-                    Dental Motion Graphics
-                </h3>
-                <p class="category-description">مقاطع موشن جرافيك متخصصة في مجال طب الأسنان والعيادات السنية</p>
-
-                <!-- الفيديوهات -->
-                <div class="videos-grid" id="dental-videos">
-
-                    <div class="video-card reels-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/K6mfN9dyOAY/maxresdefault.jpg" alt="تركيبات اسنان"
-                                loading="lazy">
-                            <div class="play-btn" onclick="playVideo('K6mfN9dyOAY', 'youtube', 'تركيبات اسنان')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                    </div>
-
-                    <div class="video-card reels-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/S3jNKzu0jeM/maxresdefault.jpg"
-                                alt="تركيبات اسنان 2 بدون موسيقى" loading="lazy">
-                            <div class="play-btn"
-                                onclick="playVideo('S3jNKzu0jeM', 'youtube', 'تركيبات اسنان 2 بدون موسيقى')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                    </div>
-                    <div class="video-card reels-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/roTVFzth48o/maxresdefault.jpg" alt="حلة زراعة سنان"
-                                loading="lazy">
-                            <div class="play-btn" onclick="playVideo('roTVFzth48o', 'youtube', 'حلة زراعة سنان')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- قسم Beauty Clinics Videos -->
-            <div class="category-section glass reveal">
-                <h3 class="category-title">
-                    <i class="fas fa-stethoscope"></i>
-                    Beauty Clinics Videos
-                </h3>
-                <p class="category-description">مقاطع ترويجية وتعليمية لعيادات التجميل والتجميل الطبي</p>
-
-                <!-- الفيديوهات -->
-                <div class="videos-grid" id="clinics-videos">
-                    <!-- فيديو مرجعي -->
-                    <div class="video-card reels-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/sttWYKD5EaM/maxresdefault.jpg"
-                                alt="dr shimaa Z-clinic vid 4" loading="lazy">
-                            <div class="play-btn"
-                                onclick="playVideo('sttWYKD5EaM', 'youtube', 'dr shimaa Z-clinic vid 4')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                    </div>
-
-                    <div class="video-card reels-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/W4MUDlYyS3c/maxresdefault.jpg" alt="animation"
-                                loading="lazy">
-                            <div class="play-btn" onclick="playVideo('W4MUDlYyS3c', 'youtube', 'animation')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                    </div>
-
-                    <div class="video-card reels-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/Z0JbTdehnN8/maxresdefault.jpg" alt="profhydro"
-                                loading="lazy">
-                            <div class="play-btn" onclick="playVideo('Z0JbTdehnN8', 'youtube', 'profhydro')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- قسم Other Talking Head -->
-            <div class="category-section glass reveal">
-                <h3 class="category-title">
-                    <i class="fas fa-chair"></i>
-                    Talking Head Videos
-                </h3>
-                <p class="category-description">مقاطع يتحدث فيها شخص امام الكاميرا مباشرة عن شي معين</p>
-
-                <!-- الفيديوهات -->
-                <div class="videos-grid" id="clinics-videos">
-                    <!-- فيديو مرجعي -->
-                    <div class="video-card reels-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/CmKgbE_9iV8/maxresdefault.jpg" alt="patient review"
-                                loading="lazy">
-                            <div class="play-btn" onclick="playVideo('CmKgbE_9iV8', 'youtube', 'patient review')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                    </div>
-
-                    <div class="video-card reels-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/Pu8EMSssXbw/maxresdefault.jpg" alt="ا. خالد المحامي 1"
-                                loading="lazy">
-                            <div class="play-btn" onclick="playVideo('Pu8EMSssXbw', 'youtube', 'ا. خالد المحامي 1')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                    </div>
-
-                    <div class="video-card reels-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/HIjp2RFsImU/maxresdefault.jpg" alt="الفارس الشهم"
-                                loading="lazy">
-                            <div class="play-btn" onclick="playVideo('HIjp2RFsImU', 'youtube', 'الفارس الشهم')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-
-            <!-- قسم Motion + Voice Over -->
-            <div class="category-section glass reveal">
-                <h3 class="category-title">
-                    <i class="fas fa-film"></i>
-                    Motion graphics(collage and more..)
-                </h3>
-                <p class="category-description">مقاطع موشن جرافيك بأنواعها لفيديوهات التعليق الصوتي</p>
-
-                <!-- الفيديوهات -->
-                <div class="videos-grid" id="motion-videos">
-
-                    <div class="video-card reels-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/ao77WZLEGyM/maxresdefault.jpg"
-                                alt="true football player" loading="lazy">
-                            <div class="play-btn" onclick="playVideo('ao77WZLEGyM', 'youtube', 'true football player')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                    </div>
-
-                    <div class="video-card reels-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/XRtqupsitm8/maxresdefault.jpg" alt="motion graphics"
-                                loading="lazy">
-                            <div class="play-btn" onclick="playVideo('XRtqupsitm8', 'youtube', 'motion graphics')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                    </div>
-
-                    <div class="video-card reels-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/wzbFL6QYwNw/maxresdefault.jpg"
-                                alt="collage style motion graphics video" loading="lazy">
-                            <div class="play-btn"
-                                onclick="playVideo('wzbFL6QYwNw', 'youtube', 'collage style motion graphics video')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+            <p class="section-subtitle reveal" data-i18n="reels.subtitle">أعمالي في الريلز والمقاطع القصيرة</p>
+            <div id="reels-departments"></div>
         </div>
     </section>
 
@@ -608,66 +633,19 @@
     <section id="long" class="section">
         <div class="container">
             <h2 class="section-title reveal">Long Form Videos</h2>
-            <p class="section-subtitle reveal">أعمالي في الفيديوهات الطويلة</p>
-
-            <div class="category-section glass reveal">
-                <!-- الفيديوهات الطويلة -->
-                <div class="videos-grid" id="long-videos">
-                    <!-- فيديو مرجعي -->
-                    <div class="video-card long-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/KOquGlZaNco/maxresdefault.jpg" alt="استكشاف الأردن -"
-                                loading="lazy">
-                            <div class="play-btn" onclick="playVideo('KOquGlZaNco', 'youtube', 'استكشاف الأردن -')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                        <div class="video-info">
-                            <h4>استكشاف الأردن</h4>
-                        </div>
-                    </div>
-
-                    <div class="video-card long-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/MFLcdSeWr7M/maxresdefault.jpg"
-                                alt="مارسيلو : إزاي شاب من حارات ريو بقي معجزة في ملاعب العالم!" loading="lazy">
-                            <div class="play-btn"
-                                onclick="playVideo('MFLcdSeWr7M', 'youtube', 'مارسيلو : إزاي شاب من حارات ريو بقي معجزة في ملاعب العالم!')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                        <div class="video-info">
-                            <h4>مارسيلو : إزاي شاب من حارات ريو بقي معجزة في ملاعب العالم!</h4>
-                        </div>
-                    </div>
-
-                    <div class="video-card long-video">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/8Ybj9hDLXJg/maxresdefault.jpg"
-                                alt="مقدمة كتاب حركاتك الخمسة القادمة" loading="lazy">
-                            <div class="play-btn"
-                                onclick="playVideo('8Ybj9hDLXJg', 'youtube', 'مقدمة كتاب حركاتك الخمسة القادمة')">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-overlay"></div>
-                        </div>
-                        <div class="video-info">
-                            <h4>مقدمة كتاب حركاتك الخمسة القادمة</h4>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+            <p class="section-subtitle reveal" data-i18n="long.subtitle">أعمالي في الفيديوهات الطويلة</p>
+            <div id="long-departments"></div>
         </div>
     </section>
+
+    <!-- أقسام إضافية من لوحة التحكم -->
+    <div id="dynamic-sections-container"></div>
 
     <!-- ================= REVIEWS SECTION ================= -->
     <section id="reviews" class="section reviews-section">
         <div class="container">
-            <h2 class="section-title reveal">تقييمات العملاء</h2>
-            <p class="section-subtitle reveal">ماذا قالوا عن أعمالي</p>
+            <h2 class="section-title reveal" data-i18n="reviews.title">تقييمات العملاء</h2>
+            <p class="section-subtitle reveal" data-i18n="reviews.subtitle">ماذا قالوا عن أعمالي</p>
 
             <div class="reviews-container glass reveal">
                 <!-- مراجعة 1 -->
@@ -916,63 +894,50 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-
-        <!-- إحصائيات التقييمات -->
-        <div class="reviews-stats glass reveal">
-            <h3 class="stats-title">📊 إحصائيات التقييمات</h3>
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-icon">
-                        <i class="fas fa-star"></i>
+            <!-- إحصائيات التقييمات -->
+            <div class="reviews-stats glass reveal">
+                <h3 class="stats-title">📊 <span data-i18n="reviews.stats.title">إحصائيات التقييمات</span></h3>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-icon"><i class="fas fa-star"></i></div>
+                        <div class="stat-content">
+                            <h4>4.8/5</h4>
+                            <p data-i18n="reviews.stats.avg">متوسط التقييم</p>
+                        </div>
                     </div>
-                    <div class="stat-content">
-                        <h4>4.8/5</h4>
-                        <p>متوسط التقييم</p>
+                    <div class="stat-box">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-content">
+                            <h4>50+</h4>
+                            <p data-i18n="reviews.stats.clients">عميل راضٍ</p>
+                        </div>
                     </div>
-                </div>
-
-                <div class="stat-box">
-                    <div class="stat-icon">
-                        <i class="fas fa-users"></i>
+                    <div class="stat-box">
+                        <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
+                        <div class="stat-content">
+                            <h4>95%</h4>
+                            <p data-i18n="reviews.stats.repeat">مشاريع متكررة</p>
+                        </div>
                     </div>
-                    <div class="stat-content">
-                        <h4>50+</h4>
-                        <p>عميل راضٍ</p>
-                    </div>
-                </div>
-
-                <div class="stat-box">
-                    <div class="stat-icon">
-                        <i class="fas fa-project-diagram"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h4>95%</h4>
-                        <p>مشاريع متكررة</p>
-                    </div>
-                </div>
-
-                <div class="stat-box">
-                    <div class="stat-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h4>100%</h4>
-                        <p>تسليم في الوقت</p>
+                    <div class="stat-box">
+                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                        <div class="stat-content">
+                            <h4>100%</h4>
+                            <p data-i18n="hero.stat.ontime">تسليم في الوقت</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- زر إضافة تقييم -->
-        <div class="add-review-section glass reveal">
-            <h3><i class="fas fa-comment-medical"></i> شارك تجربتك</h3>
-            <p>شارك تجربتك في العمل معي وساعد الآخرين في اتخاذ القرار</p>
-            <button class="btn-primary" onclick="showReviewForm()">
-                <i class="fas fa-plus"></i> أضف تقييمك
-            </button>
-        </div>
+            <!-- زر إضافة تقييم -->
+            <div class="add-review-section glass reveal">
+                <h3><i class="fas fa-comment-medical"></i> <span data-i18n="reviews.share.title">شارك تجربتك</span></h3>
+                <p data-i18n="reviews.share.text">شارك تجربتك في العمل معي وساعد الآخرين في اتخاذ القرار</p>
+                <button class="btn-primary" onclick="showReviewForm()">
+                    <i class="fas fa-plus"></i> <span data-i18n="reviews.share.button">أضف تقييمك</span>
+                </button>
+            </div>
         </div>
     </section>
 
@@ -980,23 +945,25 @@
     <div id="reviewFormModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-comment-alt"></i> أضف تقييمك</h3>
-                <button class="close-modal" onclick="closeReviewForm()">&times;</button>
+                <h3><i class="fas fa-comment-alt"></i> <span data-i18n="modal.title">أضف تقييمك</span></h3>
+                <button class="close-modal" onclick="closeReviewForm()" aria-label="إغلاق">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="reviewForm">
                     <div class="form-group">
-                        <label for="reviewerName">اسمك</label>
-                        <input type="text" id="reviewerName" placeholder="ادخل اسمك" required>
+                        <label for="reviewerName" data-i18n="modal.name.label">اسمك</label>
+                        <input type="text" id="reviewerName" placeholder="ادخل اسمك"
+                            data-i18n-placeholder="modal.name.placeholder" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="reviewerTitle">وظيفتك/تخصصك</label>
-                        <input type="text" id="reviewerTitle" placeholder="مثال: طبيب أسنان، مدير تسويق، إلخ">
+                        <label for="reviewerTitle" data-i18n="modal.role.label">وظيفتك/تخصصك</label>
+                        <input type="text" id="reviewerTitle" placeholder="مثال: طبيب أسنان، مدير تسويق، إلخ"
+                            data-i18n-placeholder="modal.role.placeholder">
                     </div>
 
                     <div class="form-group">
-                        <label for="reviewRating">التقييم</label>
+                        <label for="reviewRating" data-i18n="modal.rating.label">التقييم</label>
                         <div class="rating-input">
                             <div class="stars">
                                 <i class="far fa-star" data-rating="1"></i>
@@ -1006,20 +973,20 @@
                                 <i class="far fa-star" data-rating="5"></i>
                             </div>
                             <input type="hidden" id="reviewRating" value="5">
-                            <span id="ratingValue">5 نجوم</span>
+                            <span id="ratingValue" data-i18n="modal.rating.default">5 نجوم</span>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="reviewText">تقييمك</label>
+                        <label for="reviewText" data-i18n="modal.text.label">تقييمك</label>
                         <textarea id="reviewText" rows="4" placeholder="اكتب تقييمك عن تجربة العمل معي..."
-                            required></textarea>
+                            data-i18n-placeholder="modal.text.placeholder" required></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="reviewProject">نوع المشروع</label>
+                        <label for="reviewProject" data-i18n="modal.project.label">نوع المشروع</label>
                         <select id="reviewProject">
-                            <option value="">اختر نوع المشروع</option>
+                            <option value="" data-i18n="modal.project.placeholder">اختر نوع المشروع</option>
                             <option value="دنتال">Dental Motion Graphics</option>
                             <option value="عيادات تجميل">Beauty Clinics Videos</option>
                             <option value="موشن">Motion + Voice Over</option>
@@ -1032,10 +999,10 @@
 
                     <div class="form-buttons">
                         <button type="submit" class="btn-submit">
-                            <i class="fas fa-paper-plane"></i> نشر التقييم
+                            <i class="fas fa-paper-plane"></i> <span data-i18n="modal.submit">نشر التقييم</span>
                         </button>
                         <button type="button" class="btn-cancel" onclick="closeReviewForm()">
-                            إلغاء
+                            <span data-i18n="modal.cancel">إلغاء</span>
                         </button>
                     </div>
                 </form>
@@ -1046,55 +1013,52 @@
     <!-- ================= CONTACT SECTION ================= -->
     <section id="contact" class="section contact-section">
         <div class="container">
-            <h2 class="section-title reveal">تواصل معي</h2>
-            <p class="section-subtitle reveal">للمشاريع والتعاون والاستفسارات</p>
+            <h2 class="section-title reveal" data-i18n="contact.title">تواصل معي</h2>
+            <p class="section-subtitle reveal" data-i18n="contact.subtitle">للمشاريع والتعاون والاستفسارات</p>
 
             <div class="contact-content glass reveal">
                 <div class="contact-info">
                     <div class="contact-item">
-                        <div class="contact-icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
+                        <div class="contact-icon"><i class="fas fa-envelope"></i></div>
                         <div class="contact-details">
-                            <h4>البريد الإلكتروني</h4>
+                            <h4 data-i18n="contact.email.label">البريد الإلكتروني</h4>
                             <p id="contact-email">modoelazaka@gmail.com</p>
                         </div>
                     </div>
 
                     <div class="contact-item">
-                        <div class="contact-icon">
-                            <i class="fas fa-phone"></i>
-                        </div>
+                        <div class="contact-icon"><i class="fas fa-phone"></i></div>
                         <div class="contact-details">
-                            <h4>الهاتف / واتساب</h4>
+                            <h4 data-i18n="contact.phone.label">الهاتف / واتساب</h4>
                             <p id="contact-phone">+201027064867</p>
                         </div>
                     </div>
 
                     <div class="contact-item">
-                        <div class="contact-icon">
-                            <i class="fab fa-behance"></i>
-                        </div>
+                        <div class="contact-icon"><i class="fab fa-behance"></i></div>
                         <div class="contact-details">
                             <h4>Behance Portfolio</h4>
                             <p id="contact-behance"><a href="https://www.behance.net/modoelazaka" class="social-link"
-                                    target="_blank">Me</a></p>
+                                    target="_blank" rel="noopener">Me</a></p>
                         </div>
                     </div>
                 </div>
 
                 <div class="social-links">
-                    <a href="https://www.tiktok.com/@mahmoudbarakat__" class="social-link" target="_blank">
+                    <a href="https://www.tiktok.com/@mahmoudbarakat__" class="social-link" target="_blank"
+                        rel="noopener" title="TikTok">
                         <i class="fab fa-tiktok"></i>
                     </a>
-                    <a href="https://instagram.com/barakat_tw" class="social-link" target="_blank">
+                    <a href="https://instagram.com/barakat_tw" class="social-link" target="_blank" rel="noopener"
+                        title="Instagram">
                         <i class="fab fa-instagram"></i>
                     </a>
-                    <a href="https://www.linkedin.com/in/mahmoud-barakat-126139183/" class="social-link"
-                        target="_blank">
+                    <a href="https://www.linkedin.com/in/mahmoud-barakat-126139183/" class="social-link" target="_blank"
+                        rel="noopener" title="LinkedIn">
                         <i class="fab fa-linkedin"></i>
                     </a>
-                    <a href="https://wa.me/+201027064867" class="social-link" target="_blank">
+                    <a href="https://wa.me/+201027064867" class="social-link" target="_blank" rel="noopener"
+                        title="WhatsApp">
                         <i class="fab fa-whatsapp"></i>
                     </a>
                 </div>
@@ -1109,134 +1073,110 @@
                 <div class="logo">
                     <span>⚡ LIGHTNING</span>
                 </div>
-                <p class="copyright">© 2026 Mahmoud Barakat – Video Editor. جميع الحقوق محفوظة.</p>
-                <p class="tagline">صنع بإبداع ❤️</p>
-                <p class="version" id="version-info">الإصدار 2.0 | تم التحديث: <span id="last-update"></span></p>
+                <p class="copyright">© 2026 Mahmoud Barakat – Video Editor. <span data-i18n="footer.rights">جميع الحقوق
+                        محفوظة.</span></p>
+                <p class="tagline" data-i18n="footer.tagline">صنع بإبداع ❤️</p>
+                <p class="version" id="version-info"><span data-i18n="footer.version">الإصدار 2.0 | تم التحديث:</span>
+                    <span id="last-update"></span>
+                </p>
+                <a href="dashboard.html" class="admin-link" title="لوحة التحكم"><i class="fas fa-lock"></i> <span
+                        data-i18n="footer.dashboard">لوحة التحكم</span></a>
             </div>
         </div>
     </footer>
 
-    <!-- ملف JavaScript -->
+    <!-- ملفات الجافاسكربت -->
+    <script src="data.js"></script>
+    <script src="render.js"></script>
     <script src="script.js"></script>
+    <script src="i18n.js"></script>
 
     <!-- كود مشغل الفيديو -->
+    <!-- كود مشغل الفيديو المباشر (حل نهائي لخطأ 153) -->
+    <!-- كود مشغل الفيديو المباشر (نفس فكرة الكود القديم بدون أي مكتبات خارجية معقدة) -->
     <script>
-        // إعداد مشغل الفيديو
         function setupVideoPlayer() {
             const videoPlayerModal = document.getElementById('videoPlayerModal');
             const closeVideoPlayer = document.getElementById('closeVideoPlayer');
 
-            // إغلاق المشغل
-            closeVideoPlayer.addEventListener('click', function () {
-                closeVideoPlayerModal();
-            });
-
-            // إغلاق عند النقر خارج المحتوى
-            videoPlayerModal.addEventListener('click', function (e) {
-                if (e.target === videoPlayerModal) {
-                    closeVideoPlayerModal();
-                }
-            });
-
-            // إغلاق بالزر ESC
+            if (closeVideoPlayer) {
+                closeVideoPlayer.addEventListener('click', closeVideoPlayerModal);
+            }
+            if (videoPlayerModal) {
+                videoPlayerModal.addEventListener('click', function (e) {
+                    if (e.target === videoPlayerModal) closeVideoPlayerModal();
+                });
+            }
             document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape' && videoPlayerModal.style.display === 'flex') {
+                if (e.key === 'Escape' && videoPlayerModal && videoPlayerModal.style.display === 'flex') {
                     closeVideoPlayerModal();
                 }
             });
         }
 
-        // إغلاق مشغل الفيديو
         function closeVideoPlayerModal() {
             const videoPlayerModal = document.getElementById('videoPlayerModal');
             const videoPlayerContainer = document.getElementById('videoPlayerContainer');
 
-            videoPlayerModal.style.display = 'none';
-            videoPlayerContainer.innerHTML = '';
+            if (videoPlayerModal) videoPlayerModal.style.display = 'none';
+            if (videoPlayerContainer) videoPlayerContainer.innerHTML = '';
             document.body.style.overflow = 'auto';
         }
 
-        // دالة تشغيل الفيديو
-        function playVideo(videoId, platform, title = '') {
+        function playVideo(videoId, platform, title = '', type = 'long') {
             const videoPlayerModal = document.getElementById('videoPlayerModal');
+            const videoPlayerContent = document.getElementById('videoPlayerContent');
             const videoPlayerContainer = document.getElementById('videoPlayerContainer');
             const videoInfoOverlay = document.getElementById('videoInfoOverlay');
             const videoPlayerTitle = document.getElementById('videoPlayerTitle');
+            const videoLoading = document.getElementById('videoLoading');
 
-            let embedCode = '';
+            // إخفاء مؤشر التحميل فوراً
+            if (videoLoading) videoLoading.style.display = 'none';
 
-            if (platform === 'youtube') {
-                embedCode = `
-                    <iframe 
-                        class="video-player-iframe"
-                        src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&showinfo=0&controls=1"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-                    </iframe>
-                `;
-            } else if (platform === 'instagram') {
-                embedCode = `
-                    <iframe 
-                        class="video-player-iframe"
-                        src="https://www.instagram.com/p/${videoId}/embed"
-                        frameborder="0"
-                        allowfullscreen
-                        scrolling="no">
-                    </iframe>
-                `;
+            // ضبط فئات الأبعاد (قصير/طويل)
+            if (videoPlayerContent) {
+                videoPlayerContent.classList.remove('aspect-short', 'aspect-long');
+                videoPlayerContent.classList.add(type === 'short' ? 'aspect-short' : 'aspect-long');
             }
 
-            // تعيين المحتوى
-            videoPlayerContainer.innerHTML = embedCode;
+            let embedHtml = '';
 
-            // عرض العنوان إذا كان موجوداً
-            if (title) {
+            if (platform === 'youtube') {
+                embedHtml = `
+            <iframe 
+                class="video-player-iframe"
+                src="https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0&playsinline=1"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+            </iframe>
+        `;
+            } else if (platform === 'instagram') {
+                embedHtml = `
+            <iframe 
+                class="video-player-iframe"
+                src="https://www.instagram.com/p/${encodeURIComponent(videoId)}/embed"
+                allowfullscreen
+                scrolling="no">
+            </iframe>
+        `;
+            }
+
+            videoPlayerContainer.innerHTML = embedHtml;
+
+            // إظهار العنوان للفيديوهات الطويلة فقط
+            if (title && type !== 'short' && videoInfoOverlay && videoPlayerTitle) {
                 videoInfoOverlay.style.display = 'block';
                 videoPlayerTitle.textContent = title;
-            } else {
+            } else if (videoInfoOverlay) {
                 videoInfoOverlay.style.display = 'none';
             }
 
-            // عرض المشغل
             videoPlayerModal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
-
-        // تهيئة عند تحميل الصفحة
-        document.addEventListener('DOMContentLoaded', function () {
-            setupVideoPlayer();
-
-            // تحديث تاريخ التعديل الأخير
-            const now = new Date();
-            document.getElementById('last-update').textContent =
-                now.toLocaleDateString('ar-EG') + ' ' +
-                now.toLocaleTimeString('ar-EG');
-        });
-
-        // جعل الدالة متاحة عالمياً
+        document.addEventListener('DOMContentLoaded', setupVideoPlayer);
         window.playVideo = playVideo;
-
-
-        // كود التقييمات
-        document.addEventListener('DOMContentLoaded', function () {
-            // يمكنك إضافة المزيد من التقييمات هنا يدوياً
-            /*
-            const moreReviews = [
-                {
-                    name: "محمد علي",
-                    title: "مدير تسويق",
-                    rating: 5,
-                    text: "تعامل احترافي وجودة عالية في العمل.",
-                    project: "حملة تسويقية",
-                    date: "فبراير 2024"
-                },
-                // ... المزيد من التقييمات
-            ];
-            
-            moreReviews.forEach(review => addReviewToPage(review));
-            */
-        });
     </script>
 </body>
 

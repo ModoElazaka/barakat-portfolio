@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>لوحة التحكم | Mahmoud Barakat</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="icon" type="image/x-icon" href="#">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- ================= بوابة الدخول ================= -->
+    <div id="authGate" class="auth-gate">
+        <div class="auth-card glass">
+            <div class="logo"><span>⚡ LIGHTNING</span></div>
+            <h1>لوحة التحكم</h1>
+            <p>هذه الصفحة خاصة بإدارة محتوى الموقع فقط.</p>
+            <form id="authForm">
+                <div class="form-group">
+                    <label for="authPassword">كلمة المرور</label>
+                    <input type="password" id="authPassword" placeholder="••••••••" autocomplete="current-password" required>
+                </div>
+                <p id="authError" class="auth-error" hidden>كلمة المرور غير صحيحة، حاول مرة أخرى.</p>
+                <button type="submit" class="btn-submit"><i class="fas fa-unlock"></i> دخول</button>
+            </form>
+            <a href="index.html" class="back-to-site"><i class="fas fa-arrow-right"></i> رجوع للموقع</a>
+        </div>
+    </div>
+
+    <!-- ================= التطبيق ================= -->
+    <div id="dashboardApp" class="dashboard-app" hidden>
+
+        <header class="dash-header">
+            <div class="logo"><span>⚡ LIGHTNING</span></div>
+            <div class="dash-header-title">
+                <h1>لوحة تحكم المحتوى</h1>
+                <p>إضافة وإدارة الريلز، الشورتس، والفيديوهات الطويلة</p>
+            </div>
+            <div class="dash-header-actions">
+                <span id="unsavedBadge" class="unsaved-badge" hidden><i class="fas fa-circle"></i> تغييرات غير منشورة</span>
+                <a href="index.html" target="_blank" class="dash-btn"><i class="fas fa-external-link-alt"></i> عرض الموقع</a>
+                <button id="logoutBtn" class="dash-btn dash-btn-ghost"><i class="fas fa-lock"></i> تسجيل خروج</button>
+            </div>
+        </header>
+
+        <nav class="dash-tabs">
+            <button class="dash-tab active" data-tab="add"><i class="fas fa-plus-circle"></i> إضافة فيديو</button>
+            <button class="dash-tab" data-tab="manage"><i class="fas fa-folder-tree"></i> إدارة المحتوى</button>
+            <button class="dash-tab" data-tab="publish"><i class="fas fa-rocket"></i> نشر التغييرات</button>
+        </nav>
+
+        <div class="dash-body">
+            <main class="dash-main">
+
+                <!-- ============ تبويب: إضافة فيديو ============ -->
+                <section class="dash-panel" id="panel-add">
+                    <div class="glass panel-card">
+                        <h2 id="addFormTitle"><i class="fas fa-plus-circle"></i> إضافة فيديو جديد</h2>
+                        <p class="panel-hint">أضف رابط ريلز من انستقرام، أو شورت / فيديو طويل من يوتيوب، واختر مكانه في الموقع.</p>
+
+                        <form id="videoForm">
+                            <input type="hidden" id="editingUid" value="">
+
+                            <div class="field-row">
+                                <div class="form-group">
+                                    <label for="videoPlatform">المنصة</label>
+                                    <select id="videoPlatform">
+                                        <option value="youtube">يوتيوب YouTube</option>
+                                        <option value="instagram">انستقرام Instagram</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="videoType">نوع الفيديو</label>
+                                    <select id="videoType">
+                                        <option value="short">قصير (ريلز / شورت — بدون عنوان ظاهر)</option>
+                                        <option value="long">طويل (يظهر العنوان أسفل الصورة)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="videoUrl">رابط الفيديو أو المعرّف (ID)</label>
+                                <input type="text" id="videoUrl" placeholder="مثال: https://youtu.be/xxxxxxxx أو https://www.instagram.com/reel/xxxxxxxx" required>
+                                <small class="field-note" id="videoUrlNote">يقبل رابط يوتيوب كامل (فيديو / شورت) أو المعرّف مباشرة.</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="videoTitle">عنوان الفيديو</label>
+                                <input type="text" id="videoTitle" placeholder="مثال: تركيبات أسنان" required>
+                            </div>
+
+                            <div class="form-group" id="thumbnailField">
+                                <label for="videoThumbUrl">صورة مصغّرة (اختياري ليوتيوب — مطلوبة تقريباً لانستقرام)</label>
+                                <input type="text" id="videoThumbUrl" placeholder="رابط صورة مباشر (https://...)">
+                                <small class="field-note">أو ارفع صورة من جهازك بدلاً من الرابط:</small>
+                                <input type="file" id="videoThumbFile" accept="image/*">
+                                <div id="thumbPreviewWrap" class="thumb-preview-wrap" hidden>
+                                    <img id="thumbPreviewImg" alt="معاينة الصورة المصغرة">
+                                    <button type="button" id="clearThumbBtn" class="dash-btn dash-btn-ghost small">
+                                        <i class="fas fa-times"></i> إزالة الصورة
+                                    </button>
+                                </div>
+                            </div>
+
+                            <hr class="dash-divider">
+
+                            <div class="form-group">
+                                <label for="destSection">أضف إلى قسم</label>
+                                <select id="destSection"></select>
+                            </div>
+
+                            <div id="newSectionFields" class="nested-fields" hidden>
+                                <div class="form-group">
+                                    <label for="newSectionTitle">عنوان القسم الجديد</label>
+                                    <input type="text" id="newSectionTitle" placeholder="مثال: مشاريع رمضان 2026">
+                                </div>
+                                <div class="field-row">
+                                    <div class="form-group">
+                                        <label for="newSectionNav">اسم القسم في القائمة العلوية</label>
+                                        <input type="text" id="newSectionNav" placeholder="مثال: رمضان 2026">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newSectionSubtitle">وصف مختصر (اختياري)</label>
+                                        <input type="text" id="newSectionSubtitle" placeholder="يظهر أسفل عنوان القسم">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="destDepartment">أضف داخل فئة</label>
+                                <select id="destDepartment"></select>
+                            </div>
+
+                            <div id="newDepartmentFields" class="nested-fields" hidden>
+                                <div class="field-row">
+                                    <div class="form-group">
+                                        <label for="newDeptTitle">عنوان الفئة (اتركه فارغاً لعرض بدون عنوان فرعي)</label>
+                                        <input type="text" id="newDeptTitle" placeholder="مثال: فيديوهات المطاعم">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newDeptIcon">أيقونة Font Awesome (اختياري)</label>
+                                        <input type="text" id="newDeptIcon" placeholder="مثال: fa-utensils">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newDeptDesc">وصف الفئة (اختياري)</label>
+                                    <input type="text" id="newDeptDesc" placeholder="جملة قصيرة تصف هذه الفئة">
+                                </div>
+                            </div>
+
+                            <div class="form-buttons">
+                                <button type="submit" class="btn-submit" id="videoFormSubmitBtn">
+                                    <i class="fas fa-plus"></i> إضافة الفيديو
+                                </button>
+                                <button type="button" class="btn-cancel" id="cancelEditBtn" hidden>إلغاء التعديل</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- ============ تبويب: إدارة المحتوى ============ -->
+                <section class="dash-panel" id="panel-manage" hidden>
+                    <div class="glass panel-card">
+                        <div class="manage-header">
+                            <div>
+                                <h2><i class="fas fa-folder-tree"></i> إدارة المحتوى</h2>
+                                <p class="panel-hint">عدّل، رتّب، أو احذف الأقسام والفئات والفيديوهات.</p>
+                            </div>
+                            <button id="addSectionBtn" class="dash-btn"><i class="fas fa-plus"></i> قسم جديد</button>
+                        </div>
+                        <div id="manageTree" class="manage-tree"></div>
+                    </div>
+                </section>
+
+                <!-- ============ تبويب: نشر التغييرات ============ -->
+                <section class="dash-panel" id="panel-publish" hidden>
+                    <div class="glass panel-card">
+                        <h2><i class="fas fa-rocket"></i> نشر التغييرات</h2>
+                        <p class="panel-hint">
+                            الموقع لا يحتوي على قاعدة بيانات — كل التعديلات التي تقوم بها هنا تُحفظ داخل هذا المتصفح
+                            فقط. لكي تظهر التعديلات لكل زوار الموقع، اضغط على تحميل ملف <code>data.js</code> المحدث ثم استبدل الملف القديم به.
+                        </p>
+
+                        <div class="publish-actions">
+                            <div class="publish-card">
+                                <i class="fas fa-file-arrow-down publish-icon"></i>
+                                <h3>تحميل data.js المحدث</h3>
+                                <p>يحتوي على كل الأقسام والفيديوهات الحالية.</p>
+                                <button id="downloadDataBtn" class="btn-submit"><i class="fas fa-download"></i> تحميل data.js</button>
+                            </div>
+                            <div class="publish-card">
+                                <i class="fas fa-clock-rotate-left publish-icon"></i>
+                                <h3>استرجاع النسخة المنشورة</h3>
+                                <p>يلغي كل التعديلات المحلية غير المنشورة.</p>
+                                <button id="resetDataBtn" class="btn-cancel"><i class="fas fa-rotate-left"></i> استرجاع</button>
+                            </div>
+                        </div>
+
+                        <ol class="publish-steps">
+                            <li>اضغط "تحميل data.js" واحفظ الملف.</li>
+                            <li>استبدل ملف <code>data.js</code> القديم بالملف الجديد.</li>
+                            <li>ارفع الملفات مجدداً إلى الاستضافة.</li>
+                        </ol>
+                    </div>
+                </section>
+
+            </main>
+
+            <aside class="dash-preview">
+                <div class="preview-header">
+                    <h3><i class="fas fa-eye"></i> معاينة مباشرة</h3>
+                    <button id="refreshPreviewBtn" class="dash-btn dash-btn-ghost small" title="تحديث المعاينة"><i class="fas fa-rotate"></i></button>
+                </div>
+                <div class="preview-frame-wrap">
+                    <iframe id="previewFrame" src="index.html" title="معاينة الموقع" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="toast" class="toast" hidden></div>
+
+    <script src="data.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+
+</html>

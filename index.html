@@ -1,1210 +1,563 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" class="no-js">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="referrer" content="strict-origin-when-cross-origin">
-    <title>Mahmoud Barakat | Video Editor</title>
+    <meta name="theme-color" content="#070b1a">
+    <title>Mahmoud Barakat | Video Editor & Motion Designer</title>
+    <meta name="description"
+        content="Mahmoud Barakat — video editor, motion graphics designer and content creator. Reels, long-form videos, color grading and motion graphics for clinics, brands and creators.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Mahmoud Barakat | Video Editor & Motion Designer">
+    <meta property="og:description" content="Reels, long-form videos, motion graphics and color grading.">
+    <meta property="og:image" content="assets/img/profile.webp">
 
-    <!-- الروابط الخارجية -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap"
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://img.youtube.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
-
-    <!-- ملفات CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
     <link rel="stylesheet" href="style.css">
 
-    <!-- الصفحة المفضلة (favicon) -->
-    <link rel="icon" type="image/x-icon" href="#">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
-
-    <!-- مشغل الفيديو -->
-    <style>
-        /* ================= مشغل الفيديو المتجاوب للجوال والكمبيوتر ================= */
-        .video-player-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 10000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            padding: 15px;
-            box-sizing: border-box;
-        }
-
-        .video-player-content {
-            background: #000;
-            border-radius: 20px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        /* الفيديوهات الطويلة (عرضي 16:9) */
-        .video-player-content.aspect-long {
-            width: min(94vw, 1000px);
-            aspect-ratio: 16 / 9;
-            max-height: 85vh;
-        }
-
-        /* الريلز والشورتس (طولي 9:16) */
-        .video-player-content.aspect-short {
-            height: min(88vh, 780px);
-            aspect-ratio: 9 / 16;
-            width: auto;
-            max-width: 95vw;
-        }
-
-        .video-player-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-            background: #000;
-        }
-
-        /* زر إغلاق سهل الضغط */
-        .close-video-player {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(239, 68, 68, 0.9);
-            color: white;
-            border: none;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            font-size: 1.3rem;
-            cursor: pointer;
-            z-index: 10002;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            transition: transform 0.2s ease, background 0.2s ease;
-        }
-
-        .close-video-player:active {
-            transform: scale(0.9);
-            background: #dc2626;
-        }
-
-        /* نافذة العنوان السفلية */
-        .video-info-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
-            padding: 15px 20px;
-            color: white;
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        .video-info-overlay h3 {
-            font-size: 1.1rem;
-            margin: 0;
-            font-weight: 600;
-        }
-
-        /* ================= شاشات الجوال الصغيرة (أقل من 768px) ================= */
-        @media (max-width: 768px) {
-            .video-player-modal {
-                padding: 0;
-                /* استغلال الشاشة بالكامل */
-            }
-
-            /* الريلز على الجوال يملأ الشاشة رأسياً تماماً مثل تيك توك وانستقرام */
-            .video-player-content.aspect-short {
-                width: 100vw;
-                height: 100dvh;
-                /* dvh لضبط شريط المتصفح السفلي */
-                max-height: 100dvh;
-                border-radius: 0;
-                border: none;
-            }
-
-            /* الفيديوهات الطويلة على الجوال تتمركز بنسبة 16:9 طبيعية */
-            .video-player-content.aspect-long {
-                width: 100vw;
-                aspect-ratio: 16 / 9;
-                height: auto;
-                border-radius: 0;
-                border: none;
-            }
-
-            .close-video-player {
-                top: max(15px, env(safe-area-inset-top));
-                left: 15px;
-                width: 42px;
-                height: 42px;
-                font-size: 1.2rem;
-                background: rgba(0, 0, 0, 0.6);
-                border: 1px solid rgba(255, 255, 255, 0.3);
-            }
-        }
-
-        .close-video-player:hover {
-            background: #dc2626;
-            transform: scale(1.1) rotate(90deg);
-            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6);
-        }
-
-        .video-info-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.95));
-            padding: 30px;
-            color: white;
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        .video-info-overlay h3 {
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-            color: white;
-            font-weight: 700;
-        }
-
-        .video-info-overlay p {
-            color: #cbd5e1;
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-
-        .video-external-link {
-            position: absolute;
-            bottom: 16px;
-            inset-inline-end: 16px;
-            z-index: 10;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            text-decoration: none;
-            padding: 9px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            backdrop-filter: blur(6px);
-            transition: all 0.25s ease;
-        }
-
-        .video-external-link[hidden] {
-            display: none;
-        }
-
-        .video-external-link:hover {
-            background: var(--accent, #3b82f6);
-            transform: translateY(-2px);
-        }
-
-        .video-loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .video-loading .spinner {
-            width: 56px;
-            height: 56px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top-color: #3b82f6;
-            animation: spin 1s linear infinite;
-        }
-
-        .video-loading span {
-            color: #cbd5e1;
-            font-size: 0.9rem;
-        }
-
-        .video-error-state {
-            display: none;
-            position: absolute;
-            inset: 0;
-            z-index: 6;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 30px;
-            gap: 16px;
-            background: #0f172a;
-        }
-
-        .video-error-state.show {
-            display: flex;
-        }
-
-        .video-error-state i.error-icon {
-            font-size: 2.6rem;
-            color: #f59e0b;
-        }
-
-        .video-error-state h4 {
-            color: #fff;
-            font-size: 1.2rem;
-            margin: 0;
-        }
-
-        .video-error-state p {
-            color: #94a3b8;
-            font-size: 0.92rem;
-            max-width: 380px;
-            line-height: 1.6;
-            margin: 0;
-        }
-
-        .video-error-state .watch-external-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--gradient-accent, linear-gradient(135deg, #3b82f6, #6366f1));
-            color: #fff;
-            text-decoration: none;
-            padding: 12px 22px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            margin-top: 6px;
-            transition: transform 0.25s ease;
-        }
-
-        .video-error-state .watch-external-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .video-player-content:has(.video-error-state.show) {
-            aspect-ratio: auto !important;
-            width: min(94vw, 420px) !important;
-            height: auto !important;
-            min-height: 340px !important;
-            max-height: 90vh !important;
-            border-radius: 20px !important;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .video-player-modal {
-                padding: 0;
-            }
-
-            .video-player-content {
-                width: 100vw;
-                height: 100vh;
-                max-height: 100vh;
-                aspect-ratio: auto;
-                border-radius: 0;
-            }
-
-            .video-player-content.aspect-short {
-                width: 100vw;
-                height: 100vh;
-            }
-
-            .video-player-content.aspect-long {
-                width: 100vw;
-                aspect-ratio: 16 / 9;
-                height: auto;
-                max-height: 100vh;
-                align-self: center;
-            }
-
-            .close-video-player {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-                top: env(safe-area-inset-top, 14px);
-                left: 14px;
-            }
-
-            .video-info-overlay {
-                padding: 16px;
-            }
-
-            .video-info-overlay h3 {
-                font-size: 1.15rem;
-            }
-
-            .video-info-overlay p {
-                font-size: 0.95rem;
-            }
-
-            .video-external-link {
-                bottom: 14px;
-                font-size: 0.8rem;
-                padding: 8px 14px;
-            }
-        }
-
-        .videos-grid {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .videos-grid::-webkit-scrollbar {
-            display: none !important;
-            width: 0 !important;
-            height: 0 !important;
-            background: transparent !important;
-        }
-
-        /* إخفاء مؤشر التحميل تماماً */
-        .video-loading {
-            display: none !important;
-        }
-
-        /* جعل الحاوية والـ iframe يملآن المساحة بنسبة 100% بدون أي فراغات */
-        #videoPlayerContainer {
-            width: 100% !important;
-            height: 100% !important;
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            background: #000;
-        }
-
-        .video-player-iframe {
-            width: 100% !important;
-            height: 100% !important;
-            border: none !important;
-            display: block !important;
-        }
-    </style>
+    <script defer src="data.js"></script>
+    <script defer src="render.js"></script>
+    <script defer src="i18n.js"></script>
+    <script defer src="script.js"></script>
 </head>
 
 <body>
-    <!-- مشغل الفيديو -->
-    <div id="videoPlayerModal" class="video-player-modal">
-        <div class="video-player-content" id="videoPlayerContent">
-            <button class="close-video-player" id="closeVideoPlayer" aria-label="إغلاق">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="video-loading" id="videoLoading">
-                <div class="spinner"></div>
-                <span data-i18n="player.loading">جاري تحميل الفيديو...</span>
-            </div>
-            <div class="video-error-state" id="videoErrorState">
-                <i class="fas fa-triangle-exclamation error-icon"></i>
-                <h4 id="videoErrorTitle" data-i18n="player.error.title">تعذّر تشغيل الفيديو هنا</h4>
-                <p id="videoErrorMessage" data-i18n="player.error.generic">قد يكون صاحب الفيديو قيّد تشغيله خارج
-                    منصته، أو أن هناك مشكلة مؤقتة. جرّب مشاهدته مباشرة من المصدر:</p>
-                <a href="#" target="_blank" rel="noopener" class="watch-external-btn" id="videoErrorLink">
-                    <i class="fas fa-arrow-up-right-from-square"></i>
-                    <span id="videoErrorLinkLabel" data-i18n="player.watchOn">مشاهدة على المنصة الأصلية</span>
-                </a>
-            </div>
-            <div id="videoPlayerContainer"></div>
-            <a href="#" target="_blank" rel="noopener" class="video-external-link" id="videoExternalLink" hidden>
-                <i class="fas fa-arrow-up-right-from-square"></i>
-                <span id="videoExternalLinkLabel" data-i18n="player.watchOn">مشاهدة على المنصة الأصلية</span>
-            </a>
-            <div class="video-info-overlay" id="videoInfoOverlay" style="display: none;">
-                <h3 id="videoPlayerTitle"></h3>
-                <p id="videoPlayerDescription"></p>
-            </div>
-        </div>
+    <a class="skip-link" href="#main" data-i18n="a11y.skip">تخطَّ إلى المحتوى</a>
+
+    <!-- خلفية زجاجية متحركة -->
+    <div class="backdrop" aria-hidden="true">
+        <span class="orb orb-1"></span>
+        <span class="orb orb-2"></span>
+        <span class="orb orb-3"></span>
     </div>
 
     <!-- ================= HEADER ================= -->
-    <header class="header glass">
+    <header class="header" id="header">
         <div class="container">
-            <div class="nav">
-                <div class="logo">
-                    <span>⚡ LIGHTNING</span>
-                </div>
-                <nav class="nav-links">
+            <nav class="nav glass" aria-label="Main">
+                <a href="#home" class="logo" aria-label="Lightning — home">
+                    <span class="logo-mark">⚡</span><span class="logo-text">LIGHTNING</span>
+                </a>
+
+                <div class="nav-links" id="navLinks">
                     <a href="#home" class="nav-link active" data-i18n="nav.home">الرئيسية</a>
-                    <a href="#home" class="nav-link" data-i18n="nav.about">عنّي</a>
+                    <a href="#color-grading" class="nav-link" data-i18n="nav.grading">تلوين</a>
                     <a href="#reels" class="nav-link" data-i18n="nav.reels">الريلز</a>
                     <a href="#long" class="nav-link" data-i18n="nav.long">الفيديوهات الطويلة</a>
                     <a href="#reviews" class="nav-link" data-i18n="nav.reviews">التقييمات</a>
                     <a href="#contact" class="nav-link" data-i18n="nav.contact">تواصل معي</a>
-                </nav>
-                <button class="lang-toggle" id="langToggle" type="button" title="Switch language">
-                    <i class="fas fa-globe"></i> <span id="langToggleLabel">EN</span>
-                </button>
-                <button class="menu-toggle" id="menuToggle" aria-label="القائمة">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
+                </div>
+
+                <div class="nav-actions">
+                    <button class="chip-btn" id="langToggle" type="button" title="Switch to English">
+                        <i class="fas fa-globe" aria-hidden="true"></i> <span id="langToggleLabel">EN</span>
+                    </button>
+                    <button class="icon-toggle" id="menuToggle" type="button" aria-label="القائمة"
+                        aria-controls="navLinks" aria-expanded="false">
+                        <i class="fas fa-bars" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </nav>
         </div>
     </header>
 
-    <!-- ================= HERO / ABOUT SECTION ================= -->
-    <section id="home" class="hero-section">
-        <div class="container">
-            <div class="hero-content">
-                <div class="about-card glass reveal">
-                    <div class="profile-container">
-                        <div class="profile-image-wrapper">
-                            <div class="profile-image">
-                                <img src="me copy.png" alt="Mahmoud Barakat - Video Editor" class="profile-img">
-                                <div class="image-frame"></div>
-                            </div>
+    <main id="main">
+        <!-- ================= HERO ================= -->
+        <section id="home" class="hero">
+            <div class="container">
+                <div class="hero-card glass reveal">
+                    <div class="hero-media">
+                        <div class="portrait">
+                            <picture>
+                                <source srcset="assets/img/profile.webp" type="image/webp">
+                                <img src="me copy.png" alt="Mahmoud Barakat" width="339" height="505"
+                                    fetchpriority="high">
+                            </picture>
+                            <span class="portrait-status"><span class="dot"></span> <span
+                                    data-i18n="hero.available">متاح لمشاريع جديدة</span></span>
+                        </div>
+                    </div>
+
+                    <div class="hero-body">
+                        <p class="eyebrow">Video Editor · Motion Designer · Content Creator</p>
+                        <h1 class="hero-title" dir="ltr">Mahmoud <span class="gradient-text">Barakat</span></h1>
+
+                        <p class="hero-intro" data-i18n="hero.intro">محرر فيديو وموشن ديزاينر وصانع محتوى، متخصص في
+                            إنتاج فيديوهات قصيرة وطويلة بجودة عالية تناسب المنصات المختلفة. أمتلك خبرة في العمل مع عيادات
+                            طبية، علامات تجارية، وصناع محتوى من دول متعددة. أؤمن أن الفيديو الناجح لا يعتمد فقط على
+                            المونتاج، بل على فهم الرسالة وتحويلها إلى تجربة بصرية مؤثرة.</p>
+
+                        <div class="hero-cta">
+                            <a href="#reels" class="btn btn-primary">
+                                <i class="fas fa-play" aria-hidden="true"></i>
+                                <span data-i18n="hero.cta.work">شاهد أعمالي</span>
+                            </a>
+                            <a href="https://wa.me/201027064867" class="btn btn-glass" target="_blank" rel="noopener">
+                                <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                                <span data-i18n="hero.cta.contact">ابدأ مشروعك</span>
+                            </a>
                         </div>
 
-                        <div class="about-content">
-                            <div class="about-header">
-                                <h1 dir="rtl" class="hero-title">Mahmoud <span class="highlight">Barakat</span></h1>
-                                <p class="hero-subtitle">Video editor | Motion Graphics designer | Content creator</p>
+                        <ul class="stats" role="list">
+                            <li class="stat">
+                                <span class="stat-number" data-count="4" data-suffix="+">4+</span>
+                                <span class="stat-label" data-i18n="hero.stat.years">سنوات خبرة</span>
+                            </li>
+                            <li class="stat">
+                                <span class="stat-number" data-count="102">102</span>
+                                <span class="stat-label" data-i18n="hero.stat.projects">مشروع في 2025</span>
+                            </li>
+                            <li class="stat">
+                                <span class="stat-number" data-count="100" data-suffix="%">100%</span>
+                                <span class="stat-label" data-i18n="hero.stat.ontime">تسليم في الوقت</span>
+                            </li>
+                            <li class="stat">
+                                <span class="stat-number">∞</span>
+                                <span class="stat-label" data-i18n="hero.stat.creativity">إبداع مستمر</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
-                                <div class="title-divider">
-                                    <div class="line"></div>
-                                    <div class="dot"></div>
-                                    <div class="line"></div>
-                                </div>
-                            </div>
+                <!-- تفاصيل: التخصصات / الدول / الأدوات -->
+                <div class="hero-details">
+                    <article class="detail-card glass reveal">
+                        <h2 class="detail-title"><i class="fas fa-bullseye" aria-hidden="true"></i> <span
+                                data-i18n="hero.specialties.title">تخصصاتي</span></h2>
+                        <ul class="check-list">
+                            <li><i class="fas fa-circle-check" aria-hidden="true"></i> <span
+                                    data-i18n="hero.specialties.1">تحرير الفيديو الاحترافي</span></li>
+                            <li><i class="fas fa-circle-check" aria-hidden="true"></i> <span
+                                    data-i18n="hero.specialties.2">تصميم موشن جرافيك</span></li>
+                            <li><i class="fas fa-circle-check" aria-hidden="true"></i> <span
+                                    data-i18n="hero.specialties.3">صناعة الريلز والمحتوى القصير</span></li>
+                            <li><i class="fas fa-circle-check" aria-hidden="true"></i> <span
+                                    data-i18n="hero.specialties.4">المحتوى التعليمي والتوضيحي</span></li>
+                        </ul>
+                    </article>
 
-                            <div class="about-text">
-                                <p class="intro">
-                                    <i class="fas fa-quote-right quote-icon"></i>
-                                    <span data-i18n="hero.intro">محرر فيديو وموشن ديزاينر وصانع محتوى، متخصص في إنتاج
-                                        فيديوهات قصيرة وطويلة بجودة
-                                        عالية تناسب المنصات المختلفة. أمتلك خبرة في العمل مع عيادات طبية، علامات تجارية،
-                                        وصناع محتوى من دول متعددة. أؤمن أن الفيديو الناجح لا يعتمد فقط على المونتاج، بل
-                                        على
-                                        فهم الرسالة وتحويلها إلى تجربة بصرية مؤثرة.</span>
-                                </p>
+                    <article class="detail-card glass reveal">
+                        <h2 class="detail-title"><i class="fas fa-earth-africa" aria-hidden="true"></i> <span
+                                data-i18n="hero.international.title">العمل الدولي</span></h2>
+                        <ul class="country-list">
+                            <li><span class="flag-icon flag-icon-eg" aria-hidden="true"></span> <span
+                                    data-i18n="hero.country.eg">مصر</span></li>
+                            <li><span class="flag-icon flag-icon-sa" aria-hidden="true"></span> <span
+                                    data-i18n="hero.country.sa">السعودية</span></li>
+                            <li><span class="flag-icon flag-icon-ae" aria-hidden="true"></span> <span
+                                    data-i18n="hero.country.ae">الإمارات</span></li>
+                            <li><span class="flag-icon flag-icon-bh" aria-hidden="true"></span> <span
+                                    data-i18n="hero.country.bh">البحرين</span></li>
+                        </ul>
+                        <ul class="badge-list">
+                            <li><i class="fas fa-video" aria-hidden="true"></i> <span data-i18n="hero.badge.edu">صانع
+                                    محتوى تعليمي</span></li>
+                            <li><i class="fas fa-trophy" aria-hidden="true"></i> <span
+                                    data-i18n="hero.badge.projects">102 مشروع منجز في 2025</span></li>
+                            <li><i class="fas fa-clock" aria-hidden="true"></i> <span
+                                    data-i18n="hero.badge.ontime">تسليم في الوقت المحدد</span></li>
+                            <li><i class="fas fa-award" aria-hidden="true"></i> <span
+                                    data-i18n="hero.badge.editor">محرر فيديو معتمد</span></li>
+                        </ul>
+                    </article>
 
-                                <div class="experience-stats">
-                                    <div class="stat-item">
-                                        <div class="stat-number">3+</div>
-                                        <div class="stat-label" data-i18n="hero.stat.years">سنوات خبرة</div>
-                                    </div>
-                                    <div class="stat-item">
-                                        <div class="stat-number">102</div>
-                                        <div class="stat-label" data-i18n="hero.stat.projects">مشروع في 2025</div>
-                                    </div>
-                                    <div class="stat-item">
-                                        <div class="stat-number">100%</div>
-                                        <div class="stat-label" data-i18n="hero.stat.ontime">تسليم في الوقت</div>
-                                    </div>
-                                    <div class="stat-item">
-                                        <div class="stat-number">∞</div>
-                                        <div class="stat-label" data-i18n="hero.stat.creativity">إبداع مستمر</div>
-                                    </div>
-                                </div>
+                    <article class="detail-card glass reveal">
+                        <h2 class="detail-title"><i class="fas fa-toolbox" aria-hidden="true"></i> <span
+                                data-i18n="hero.tools.title">أدواتي</span></h2>
+                        <ul class="tool-list" dir="ltr">
+                            <li style="--tone:#9999ff"><i class="fas fa-film" aria-hidden="true"></i> Premiere Pro</li>
+                            <li style="--tone:#d291ff"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+                                After Effects</li>
+                            <li style="--tone:#ff6b6b"><i class="fas fa-palette" aria-hidden="true"></i> DaVinci
+                                Resolve</li>
+                            <li style="--tone:#38bdf8"><i class="fas fa-circle-play" aria-hidden="true"></i> Motion
+                                Graphics</li>
+                            <li style="--tone:#fbbf24"><i class="fas fa-fill-drip" aria-hidden="true"></i> Color
+                                Grading</li>
+                            <li style="--tone:#31a8ff"><i class="fas fa-image" aria-hidden="true"></i> Photoshop</li>
+                            <li style="--tone:#34d399"><i class="fas fa-scissors" aria-hidden="true"></i> CapCut</li>
+                        </ul>
+                    </article>
+                </div>
 
-                                <div class="about-details">
-                                    <div class="detail-column">
-                                        <h3><i class="fas fa-bullseye"></i> <span
-                                                data-i18n="hero.specialties.title">تخصصاتي</span></h3>
-                                        <ul class="specializations">
-                                            <li><i class="fas fa-check-circle"></i> <span
-                                                    data-i18n="hero.specialties.1">تحرير الفيديو الاحترافي</span></li>
-                                            <li><i class="fas fa-check-circle"></i> <span
-                                                    data-i18n="hero.specialties.2">تصميم موشن جرافيك</span></li>
-                                            <li><i class="fas fa-check-circle"></i> <span
-                                                    data-i18n="hero.specialties.3">صناعة الريلز والمحتوى القصير</span>
-                                            </li>
-                                            <li><i class="fas fa-check-circle"></i> <span
-                                                    data-i18n="hero.specialties.4">المحتوى التعليمي والتوضيحي</span>
-                                            </li>
-                                        </ul>
-                                    </div>
+                <p class="works-note glass reveal">
+                    <i class="fas fa-circle-info" aria-hidden="true"></i>
+                    <span data-i18n="hero.worksNote">جميع الأعمال المعروضة هي جزء صغير فقط من أعمالي التي راقت لي، وليس
+                        بالضرورة أن تكون راقت لك؛ لذا إن كنت تبحث عن شيء معيّن لا تتردد في مراسلتي.</span>
+                </p>
+            </div>
+        </section>
 
-                                    <div class="detail-column">
-                                        <h3><i class="fas fa-globe-africa"></i> <span
-                                                data-i18n="hero.international.title">العمل الدولي</span></h3>
-                                        <ul class="countries">
-                                            <li><span class="flag-icon flag-icon-eg"></span> <span
-                                                    data-i18n="hero.country.eg">مصر</span></li>
-                                            <li><span class="flag-icon flag-icon-sa"></span> <span
-                                                    data-i18n="hero.country.sa">السعودية</span></li>
-                                            <li><span class="flag-icon flag-icon-ae"></span> <span
-                                                    data-i18n="hero.country.ae">الإمارات</span></li>
-                                            <li><span class="flag-icon flag-icon-bh"></span> <span
-                                                    data-i18n="hero.country.bh">البحرين</span></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
+        <!-- ================= COLOR GRADING ================= -->
+        <section id="color-grading" class="section">
+            <div class="container">
+                <header class="section-head reveal">
+                    <h2 class="section-title">Color Grading</h2>
+                    <p class="section-subtitle" data-i18n="grading.subtitle">شوف الفرق — قبل وبعد التلوين</p>
+                </header>
 
-                            <div class="badges enhanced-badges">
-                                <span class="badge edu-badge">
-                                    <i class="fas fa-video"></i>
-                                    <span data-i18n="hero.badge.edu">صانع محتوى تعليمي</span>
-                                </span>
-                                <span class="badge project-badge">
-                                    <i class="fas fa-trophy"></i>
-                                    <span data-i18n="hero.badge.projects">102 مشروع منجز في 2025</span>
-                                </span>
-                                <span class="badge time-badge">
-                                    <i class="fas fa-clock"></i>
-                                    <span data-i18n="hero.badge.ontime">تسليم في الوقت المحدد</span>
-                                </span>
-                                <span class="badge edit-badge">
-                                    <i class="fas fa-computer"></i>
-                                    <span data-i18n="hero.badge.editor">محرر فيديو معتمد</span>
-                                </span>
-                            </div>
-
-                            <div class="skills-mini">
-                                <div class="skill-tag">
-                                    <i class="fas fa-film skill-icon" style="color: #ea77d7;"></i>
-                                    Premiere Pro
-                                </div>
-                                <div class="skill-tag">
-                                    <i class="fas fa-star skill-icon" style="color: #d291ff;"></i>
-                                    After Effects
-                                </div>
-                                <div class="skill-tag">
-                                    <i class="fas fa-palette skill-icon" style="color: #ff5252;"></i>
-                                    DaVinci Resolve
-                                </div>
-                                <div class="skill-tag">
-                                    <i class="fas fa-play-circle skill-icon" style="color: #00bfff;"></i>
-                                    Motion Graphics
-                                </div>
-                                <div class="skill-tag">
-                                    <i class="fas fa-fill-drip skill-icon" style="color: #ffa500;"></i>
-                                    Color Grading
-                                </div>
-                                <div class="skill-tag">
-                                    <i class="fas fa-image skill-icon" style="color: #31a8ff;"></i>
-                                    Photoshop
-                                </div>
-                                <div class="skill-tag">
-                                    <i class="fas fa-scissors skill-icon" style="color: #00c853;"></i>
-                                    CapCut
-                                </div>
-                            </div>
+                <div class="category glass reveal">
+                    <div class="category-head">
+                        <div>
+                            <h3 class="category-title"><i class="fas fa-fill-drip" aria-hidden="true"></i> Before
+                                &amp; After</h3>
+                            <p class="category-desc" data-i18n="grading.desc">كل التلوين والتصحيحات تمت على DaVinci
+                                Resolve</p>
                         </div>
+                    </div>
+                    <div class="grading-grid">
+                        <figure class="grading-item">
+                            <video src="assets/color/grade-1.mp4" poster="assets/color/grade-1.jpg" muted loop
+                                playsinline preload="none" aria-label="Color grading before and after 1"></video>
+                        </figure>
+                        <figure class="grading-item">
+                            <video src="assets/color/grade-2.mp4" poster="assets/color/grade-2.jpg" muted loop
+                                playsinline preload="none" aria-label="Color grading before and after 2"></video>
+                        </figure>
+                        <figure class="grading-item">
+                            <video src="assets/color/grade-3.mp4" poster="assets/color/grade-3.jpg" muted loop
+                                playsinline preload="none" aria-label="Color grading before and after 3"></video>
+                        </figure>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-    <p class="section-subtitle reveal" data-i18n="hero.worksNote">جميع الأعمال المعروضه هي جزء صغير فقط من اعمالي التي
-        راقت لي وليس بالضروره ان تكون راقت لك , لذا ان كنت تبحث عن شئ معين لا تتردد بمراسلتي</p>
+        </section>
 
-    <!-- ================= COLOR GRADING SECTION ================= -->
-    <section id="color-grading" class="section">
-        <div class="container">
-            <h2 class="section-title reveal">Color Grading</h2>
-            <p class="section-subtitle reveal">See the diffrence</p>
+        <!-- ================= REELS ================= -->
+        <section id="reels" class="section">
+            <div class="container">
+                <header class="section-head reveal">
+                    <h2 class="section-title">Reels / Short Videos</h2>
+                    <p class="section-subtitle" data-i18n="reels.subtitle">أعمالي في الريلز والمقاطع القصيرة</p>
+                </header>
+                <div id="reels-departments"></div>
+            </div>
+        </section>
 
-            <div class="category-section glass reveal">
-                <h3 class="category-title">
-                    <i class="fas fa-fill-drip" style="color:#ffa500;"></i>
-                    Before & After
-                </h3>
-                <p class="category-description">
-                    All Grades and corrections made on Davinci Resolve </p>
+        <!-- ================= LONG FORM ================= -->
+        <section id="long" class="section">
+            <div class="container">
+                <header class="section-head reveal">
+                    <h2 class="section-title">Long Form Videos</h2>
+                    <p class="section-subtitle" data-i18n="long.subtitle">أعمالي في الفيديوهات الطويلة</p>
+                </header>
+                <div id="long-departments"></div>
+            </div>
+        </section>
 
-                <div class="cg-gif-frame">
-                    <img src="color (1).gif" alt="Color Grading Before/After" class="cg-gif"
-                        loading="lazy">
-                    <img src="color (2).gif" alt="Color Grading Before/After" class="cg-gif"
-                        loading="lazy">
-                    <img src="color (3).gif" alt="Color Grading Before/After" class="cg-gif"
-                        loading="lazy">
+        <!-- أقسام إضافية من لوحة التحكم -->
+        <div id="dynamic-sections-container"></div>
 
+        <!-- ================= REVIEWS ================= -->
+        <section id="reviews" class="section">
+            <div class="container">
+                <header class="section-head reveal">
+                    <h2 class="section-title" data-i18n="reviews.title">تقييمات العملاء</h2>
+                    <p class="section-subtitle" data-i18n="reviews.subtitle">ماذا قالوا عن أعمالي</p>
+                </header>
 
+                <div class="reviews-grid">
+                    <article class="review glass reveal">
+                        <header class="review-head">
+                            <span class="avatar" aria-hidden="true"><i class="fas fa-user-doctor"></i></span>
+                            <div>
+                                <h3 class="review-name" dir="auto">أ. عمر الدسوقي</h3>
+                                <p class="review-role" dir="auto">Dental Photographer</p>
+                            </div>
+                            <span class="stars-static" aria-label="5/5">★★★★★</span>
+                        </header>
+                        <blockquote class="review-text" dir="auto">محمود بركات مصمم فيديو شاطر جدًا اشتغلت معاه أكتر من سنتين ملتزم في
+                            شغله وبيعرف يطلع أفكار حلوة وينفذها صح دايمًا مهتم بالتفاصيل وسهل في التعامل وبصراحة شخص
+                            ارتاحت في الشغل معاه</blockquote>
+                        <footer class="review-meta">
+                            <span><i class="fas fa-calendar" aria-hidden="true"></i> 2024-01</span>
+                            <span><i class="fas fa-video" aria-hidden="true"></i> Dental Motion Graphics Series</span>
+                        </footer>
+                    </article>
+
+                    <article class="review glass reveal">
+                        <header class="review-head">
+                            <span class="avatar" aria-hidden="true"><i class="fas fa-heart"></i></span>
+                            <div>
+                                <h3 class="review-name" dir="auto">Anna Al-Khamisi</h3>
+                                <p class="review-role" dir="auto">Z-linic Beauty Clinic Manager</p>
+                            </div>
+                            <span class="stars-static" aria-label="5/5">★★★★★</span>
+                        </header>
+                        <blockquote class="review-text" dir="ltr">I like overall style. I like you dynamic your videos are. I know
+                            sometimes I ask for too many details but that’s because I’m looking for a specific style. So
+                            I would like to keep on exploring how good the videos can get. Overall I’m happy with your
+                            work )))</blockquote>
+                        <footer class="review-meta">
+                            <span><i class="fas fa-calendar" aria-hidden="true"></i> 2025-07</span>
+                            <span><i class="fas fa-video" aria-hidden="true"></i> Beauty Clinic Series</span>
+                        </footer>
+                    </article>
+
+                    <article class="review glass reveal">
+                        <header class="review-head">
+                            <span class="avatar" aria-hidden="true"><i class="fas fa-chalkboard-user"></i></span>
+                            <div>
+                                <h3 class="review-name" dir="auto">أ. فهد بن عبدالعزيز</h3>
+                                <p class="review-role" dir="auto">معلم سعودي</p>
+                            </div>
+                            <span class="stars-static" aria-label="5/5">★★★★★</span>
+                        </header>
+                        <blockquote class="review-text" dir="auto">العمل معك رائع جدا ومرونة في العمل وسرعة انجاز واتقان في الانتاج
+                            شكرا لك</blockquote>
+                        <p class="review-note"><i class="fas fa-circle-check" aria-hidden="true"></i> <span
+                                data-i18n="reviews.firstTry">تم قبول المشروع من أول مرة بدون أي تعديلات</span></p>
+                        <footer class="review-meta">
+                            <span><i class="fas fa-calendar" aria-hidden="true"></i> 2025-01</span>
+                            <span><i class="fas fa-video" aria-hidden="true"></i> Educational Course Videos</span>
+                        </footer>
+                    </article>
+
+                    <article class="review glass reveal">
+                        <header class="review-head">
+                            <span class="avatar" aria-hidden="true"><i class="fas fa-bullhorn"></i></span>
+                            <div>
+                                <h3 class="review-name" dir="auto">كريمة</h3>
+                                <p class="review-role" dir="auto">مديرة تسويق</p>
+                            </div>
+                            <span class="stars-static" aria-label="5/5">★★★★★</span>
+                        </header>
+                        <blockquote class="review-text" dir="auto">ماشالله شغلك كتير حلوووو وبجنن وعندك مرونة بالتعديلات والتسليم
+                            100% ان شالله رح نضل مستمرين بالتعاون معك 🥳🥳🥳🥳🥳🥳</blockquote>
+                        <footer class="review-meta">
+                            <span><i class="fas fa-calendar" aria-hidden="true"></i> 2025-10</span>
+                            <span><i class="fas fa-video" aria-hidden="true"></i> Brand Campaign</span>
+                        </footer>
+                    </article>
+
+                    <article class="review glass reveal">
+                        <header class="review-head">
+                            <span class="avatar" aria-hidden="true"><i class="fas fa-hands-holding-child"></i></span>
+                            <div>
+                                <h3 class="review-name" dir="auto">أ. يزيد العليان</h3>
+                                <p class="review-role" dir="auto">مدير مبادرة علم لذوي الهمم</p>
+                            </div>
+                            <span class="stars-static" aria-label="5/5">★★★★★</span>
+                        </header>
+                        <blockquote class="review-text" dir="auto">كان تعملي مع الاستاذ محمود جداً جميل ومميز من ناحية التصميم و
+                            المنتاج و تقبل الأفكار وتعديل أنسان جدا رائع</blockquote>
+                        <footer class="review-meta">
+                            <span><i class="fas fa-calendar" aria-hidden="true"></i> 2024-07</span>
+                            <span><i class="fas fa-video" aria-hidden="true"></i> Promotional Videos</span>
+                        </footer>
+                    </article>
+
+                    <article class="review glass reveal">
+                        <header class="review-head">
+                            <span class="avatar" aria-hidden="true"><i class="fas fa-stethoscope"></i></span>
+                            <div>
+                                <h3 class="review-name" dir="auto">د. أحمد</h3>
+                                <p class="review-role" dir="auto">طالب بكلية الطب - بلوجر</p>
+                            </div>
+                            <span class="stars-static" aria-label="5/5">★★★★★</span>
+                        </header>
+                        <blockquote class="review-text" dir="auto">والله جدا أسطوري يعني كنت بحتاج سنة اتعلم عشان اطلع مستوى شبيه بك
+                            لكن شغلك مرتب وسريع ما شاء الله</blockquote>
+                        <footer class="review-meta">
+                            <span><i class="fas fa-calendar" aria-hidden="true"></i> 2025-09</span>
+                            <span><i class="fas fa-video" aria-hidden="true"></i> Vlogs</span>
+                        </footer>
+                    </article>
+                </div>
+
+                <ul class="review-stats glass reveal" role="list">
+                    <li><i class="fas fa-star" aria-hidden="true"></i><strong>4.8/5</strong><span
+                            data-i18n="reviews.stats.avg">متوسط التقييم</span></li>
+                    <li><i class="fas fa-users" aria-hidden="true"></i><strong>50+</strong><span
+                            data-i18n="reviews.stats.clients">عميل راضٍ</span></li>
+                    <li><i class="fas fa-repeat" aria-hidden="true"></i><strong>95%</strong><span
+                            data-i18n="reviews.stats.repeat">مشاريع متكررة</span></li>
+                    <li><i class="fas fa-clock" aria-hidden="true"></i><strong>100%</strong><span
+                            data-i18n="hero.stat.ontime">تسليم في الوقت</span></li>
+                </ul>
+
+                <div class="cta-card glass reveal">
+                    <div>
+                        <h3><i class="fas fa-comment-medical" aria-hidden="true"></i> <span
+                                data-i18n="reviews.share.title">شارك تجربتك</span></h3>
+                        <p data-i18n="reviews.share.text">اشتغلت معايا قبل كده؟ تقييمك بيساعد غيرك ياخد القرار.</p>
+                    </div>
+                    <button class="btn btn-primary" type="button" id="openReviewForm">
+                        <i class="fas fa-plus" aria-hidden="true"></i> <span data-i18n="reviews.share.button">أضف
+                            تقييمك</span>
+                    </button>
                 </div>
             </div>
-        </div>
-    </section>
-    <!-- ================= REELS SECTION ================= -->
-    <section id="reels" class="section">
-        <div class="container">
-            <h2 class="section-title reveal">Reels / Short Videos</h2>
-            <p class="section-subtitle reveal" data-i18n="reels.subtitle">أعمالي في الريلز والمقاطع القصيرة</p>
-            <div id="reels-departments"></div>
-        </div>
-    </section>
+        </section>
 
-    <!-- ================= LONG VIDEOS SECTION ================= -->
-    <section id="long" class="section">
-        <div class="container">
-            <h2 class="section-title reveal">Long Form Videos</h2>
-            <p class="section-subtitle reveal" data-i18n="long.subtitle">أعمالي في الفيديوهات الطويلة</p>
-            <div id="long-departments"></div>
-        </div>
-    </section>
+        <!-- ================= CONTACT ================= -->
+        <section id="contact" class="section">
+            <div class="container">
+                <header class="section-head reveal">
+                    <h2 class="section-title" data-i18n="contact.title">تواصل معي</h2>
+                    <p class="section-subtitle" data-i18n="contact.subtitle">للمشاريع والتعاون والاستفسارات</p>
+                </header>
 
-    <!-- أقسام إضافية من لوحة التحكم -->
-    <div id="dynamic-sections-container"></div>
-
-    <!-- ================= REVIEWS SECTION ================= -->
-    <section id="reviews" class="section reviews-section">
-        <div class="container">
-            <h2 class="section-title reveal" data-i18n="reviews.title">تقييمات العملاء</h2>
-            <p class="section-subtitle reveal" data-i18n="reviews.subtitle">ماذا قالوا عن أعمالي</p>
-
-            <div class="reviews-container glass reveal">
-                <!-- مراجعة 1 -->
-                <div class="review-card">
-                    <div class="review-header">
-                        <div class="reviewer-info">
-                            <div class="reviewer-avatar">
-                                <i class="fas fa-user-md"></i>
-                            </div>
-                            <div class="reviewer-details">
-                                <h4>أ. عمر الدسوقي</h4>
-                                <span class="reviewer-title"> Dental Photographer</span>
-                            </div>
-                        </div>
-                        <div class="review-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span class="rating-text">5/5</span>
-                        </div>
+                <div class="contact glass reveal">
+                    <div class="contact-grid">
+                        <a class="contact-item" href="mailto:modoelazaka@gmail.com">
+                            <span class="contact-icon"><i class="fas fa-envelope" aria-hidden="true"></i></span>
+                            <span>
+                                <span class="contact-label" data-i18n="contact.email.label">البريد الإلكتروني</span>
+                                <span class="contact-value" dir="ltr">modoelazaka@gmail.com</span>
+                            </span>
+                        </a>
+                        <a class="contact-item" href="https://wa.me/201027064867" target="_blank" rel="noopener">
+                            <span class="contact-icon"><i class="fab fa-whatsapp" aria-hidden="true"></i></span>
+                            <span>
+                                <span class="contact-label" data-i18n="contact.phone.label">الهاتف / واتساب</span>
+                                <span class="contact-value" dir="ltr">+20 102 706 4867</span>
+                            </span>
+                        </a>
+                        <a class="contact-item" href="https://www.behance.net/modoelazaka" target="_blank"
+                            rel="noopener">
+                            <span class="contact-icon"><i class="fab fa-behance" aria-hidden="true"></i></span>
+                            <span>
+                                <span class="contact-label">Behance</span>
+                                <span class="contact-value" dir="ltr">behance.net/modoelazaka</span>
+                            </span>
+                        </a>
                     </div>
 
-                    <div class="review-content">
-                        <p class="review-text">
-                            "محمود بركات مصمم فيديو شاطر جدًا اشتغلت معاه أكتر من سنتين ملتزم في شغله وبيعرف يطلع أفكار
-                            حلوة وينفذها صح دايمًا مهتم بالتفاصيل وسهل في التعامل وبصراحة شخص ارتاحت في الشغل معاه"
-                        </p>
-                    </div>
-
-                    <div class="review-footer">
-                        <span class="review-date">
-                            <i class="fas fa-calendar"></i> يناير 2024
-                        </span>
-                        <span class="review-project">
-                            <i class="fas fa-video"></i> Dental motion graphics Series
-                        </span>
-                    </div>
-                </div>
-
-                <!-- مراجعة 2 -->
-                <div class="review-card">
-                    <div class="review-header">
-                        <div class="reviewer-info">
-                            <div class="reviewer-avatar">
-                                <i class="fas fa-heart"></i>
-                            </div>
-                            <div class="reviewer-details">
-                                <h4>Anna Al-Khamisi</h4>
-                                <span class="reviewer-title">مديرة عيادة تجميل Z-linic</span>
-                            </div>
-                        </div>
-                        <div class="review-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span class="rating-text">5/5</span>
-                        </div>
-                    </div>
-
-                    <div class="review-content">
-                        <p class="review-text" dir="ltr">
-                            " I like overall style
-                            I like you dynamic your videos are
-                            I know sometimes I ask for too many details but that’s because I’m looking for a specific
-                            style
-                            So I would like to keep on exploring how good the videos can get
-                            Overall I’m happy with your work ))) "
-                        </p>
-                    </div>
-
-                    <div class="review-footer">
-                        <span class="review-date">
-                            <i class="fas fa-calendar"></i> يوليو 2025
-                        </span>
-                        <span class="review-project">
-                            <i class="fas fa-video"></i> Beauty Clinic Series
-                        </span>
-                    </div>
-                </div>
-
-                <!-- مراجعة 3 -->
-                <div class="review-card">
-                    <div class="review-header">
-                        <div class="reviewer-info">
-                            <div class="reviewer-avatar">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <div class="reviewer-details">
-                                <h4>أ. فهد بن عبدالعزيز </h4>
-                                <span class="reviewer-title">معلم سعودي</span>
-                            </div>
-                        </div>
-                        <div class="review-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span class="rating-text">5/5</span>
-                        </div>
-                    </div>
-
-                    <div class="review-content">
-                        <p class="review-text">
-                            "العمل معك رائع جدا
-                            ومرونة في العمل
-                            وسرعة انجاز
-                            واتقان في الانتاج
-                            شكرا لك"
-                            <br>
-                            <span class="note">للعلم: تم قبول المشروع من اول مره بدون اي تعديلات</span>
-                        </p>
-                    </div>
-
-                    <div class="review-footer">
-                        <span class="review-date">
-                            <i class="fas fa-calendar"></i> يناير 2025
-                        </span>
-                        <span class="review-project">
-                            <i class="fas fa-video"></i> Educational Course Videos
-                        </span>
-                    </div>
-                </div>
-
-                <!-- مراجعة 4 -->
-                <div class="review-card">
-                    <div class="review-header">
-                        <div class="reviewer-info">
-                            <div class="reviewer-avatar">
-                                <i class="fas fa-briefcase"></i>
-                            </div>
-                            <div class="reviewer-details">
-                                <h4>كريمة </h4>
-                                <span class="reviewer-title">مديرة تسويق</span>
-                            </div>
-                        </div>
-                        <div class="review-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span class="rating-text">5/5</span>
-                        </div>
-                    </div>
-
-                    <div class="review-content">
-                        <p class="review-text">
-                            "ماشالله شغلك كتير حلوووو وبجنن
-                            وعندك مرونة بالتعديلات والتسليم 100%
-                            ان شالله رح نضل مستمرين بالتعاون معك
-                            🥳🥳🥳🥳🥳🥳"
-                        </p>
-                    </div>
-
-                    <div class="review-footer">
-                        <span class="review-date">
-                            <i class="fas fa-calendar"></i> أكتوبر 2025
-                        </span>
-                        <span class="review-project">
-                            <i class="fas fa-video"></i> Brand Campaign
-                        </span>
-                    </div>
-                </div>
-
-                <!-- مراجعة 5 -->
-                <div class="review-card">
-                    <div class="review-header">
-                        <div class="reviewer-info">
-                            <div class="reviewer-avatar">
-                                <i class="fas fa-briefcase"></i>
-                            </div>
-                            <div class="reviewer-details">
-                                <h4>أ. يزيد العليان </h4>
-                                <span class="reviewer-title">مدير مبادرة علم لذوي الهمم</span>
-                            </div>
-                        </div>
-                        <div class="review-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span class="rating-text">5/5</span>
-                        </div>
-                    </div>
-
-                    <div class="review-content">
-                        <p class="review-text">
-                            "كان تعملي مع الاستاذ محمود
-                            جداً جميل ومميز من ناحية التصميم و المنتاج و تقبل الأفكار وتعديل أنسان جدا رائع"
-                        </p>
-                    </div>
-
-                    <div class="review-footer">
-                        <span class="review-date">
-                            <i class="fas fa-calendar"></i> يوليو 2024
-                        </span>
-                        <span class="review-project">
-                            <i class="fas fa-video"></i> Promotional Videos
-                        </span>
-                    </div>
-                </div>
-
-                <!-- مراجعة 6 -->
-                <div class="review-card">
-                    <div class="review-header">
-                        <div class="reviewer-info">
-                            <div class="reviewer-avatar">
-                                <i class="fas fa-video"></i>
-                            </div>
-                            <div class="reviewer-details">
-                                <h4>د. أحمد</h4>
-                                <span class="reviewer-title">طالب بكلية الطب - بلوجر</span>
-                            </div>
-                        </div>
-                        <div class="review-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span class="rating-text">5/5</span>
-                        </div>
-                    </div>
-
-                    <div class="review-content">
-                        <p class="review-text">
-                            "والله جدا أسطوري
-                            يعني كنت بحتاج سنة اتعلم عشان اطلع مستوى شبيه بك
-                            لكن شغلك مرتب وسريع ما شاء الله"
-                        </p>
-                    </div>
-
-                    <div class="review-footer">
-                        <span class="review-date">
-                            <i class="fas fa-calendar"></i> سبتمر 2025
-                        </span>
-                        <span class="review-project">
-                            <i class="fas fa-video"></i> Vlogs
-                        </span>
+                    <div class="socials">
+                        <a href="https://www.tiktok.com/@mahmoudbarakat__" class="social" data-brand="tiktok"
+                            target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://instagram.com/barakat_tw" class="social" data-brand="instagram"
+                            target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.linkedin.com/in/mahmoud-barakat-126139183/" class="social"
+                            data-brand="linkedin" target="_blank" rel="noopener" aria-label="LinkedIn"><i
+                                class="fab fa-linkedin-in"></i></a>
+                        <a href="https://wa.me/201027064867" class="social" data-brand="whatsapp" target="_blank"
+                            rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                     </div>
                 </div>
             </div>
-
-            <!-- إحصائيات التقييمات -->
-            <div class="reviews-stats glass reveal">
-                <h3 class="stats-title">📊 <span data-i18n="reviews.stats.title">إحصائيات التقييمات</span></h3>
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <div class="stat-icon"><i class="fas fa-star"></i></div>
-                        <div class="stat-content">
-                            <h4>4.8/5</h4>
-                            <p data-i18n="reviews.stats.avg">متوسط التقييم</p>
-                        </div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-icon"><i class="fas fa-users"></i></div>
-                        <div class="stat-content">
-                            <h4>50+</h4>
-                            <p data-i18n="reviews.stats.clients">عميل راضٍ</p>
-                        </div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
-                        <div class="stat-content">
-                            <h4>95%</h4>
-                            <p data-i18n="reviews.stats.repeat">مشاريع متكررة</p>
-                        </div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                        <div class="stat-content">
-                            <h4>100%</h4>
-                            <p data-i18n="hero.stat.ontime">تسليم في الوقت</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- زر إضافة تقييم -->
-            <div class="add-review-section glass reveal">
-                <h3><i class="fas fa-comment-medical"></i> <span data-i18n="reviews.share.title">شارك تجربتك</span></h3>
-                <p data-i18n="reviews.share.text">شارك تجربتك في العمل معي وساعد الآخرين في اتخاذ القرار</p>
-                <button class="btn-primary" onclick="showReviewForm()">
-                    <i class="fas fa-plus"></i> <span data-i18n="reviews.share.button">أضف تقييمك</span>
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- نموذج إضافة تقييم -->
-    <div id="reviewFormModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-comment-alt"></i> <span data-i18n="modal.title">أضف تقييمك</span></h3>
-                <button class="close-modal" onclick="closeReviewForm()" aria-label="إغلاق">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="reviewForm">
-                    <div class="form-group">
-                        <label for="reviewerName" data-i18n="modal.name.label">اسمك</label>
-                        <input type="text" id="reviewerName" placeholder="ادخل اسمك"
-                            data-i18n-placeholder="modal.name.placeholder" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reviewerTitle" data-i18n="modal.role.label">وظيفتك/تخصصك</label>
-                        <input type="text" id="reviewerTitle" placeholder="مثال: طبيب أسنان، مدير تسويق، إلخ"
-                            data-i18n-placeholder="modal.role.placeholder">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reviewRating" data-i18n="modal.rating.label">التقييم</label>
-                        <div class="rating-input">
-                            <div class="stars">
-                                <i class="far fa-star" data-rating="1"></i>
-                                <i class="far fa-star" data-rating="2"></i>
-                                <i class="far fa-star" data-rating="3"></i>
-                                <i class="far fa-star" data-rating="4"></i>
-                                <i class="far fa-star" data-rating="5"></i>
-                            </div>
-                            <input type="hidden" id="reviewRating" value="5">
-                            <span id="ratingValue" data-i18n="modal.rating.default">5 نجوم</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reviewText" data-i18n="modal.text.label">تقييمك</label>
-                        <textarea id="reviewText" rows="4" placeholder="اكتب تقييمك عن تجربة العمل معي..."
-                            data-i18n-placeholder="modal.text.placeholder" required></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reviewProject" data-i18n="modal.project.label">نوع المشروع</label>
-                        <select id="reviewProject">
-                            <option value="" data-i18n="modal.project.placeholder">اختر نوع المشروع</option>
-                            <option value="دنتال">Dental Motion Graphics</option>
-                            <option value="عيادات تجميل">Beauty Clinics Videos</option>
-                            <option value="موشن">Motion + Voice Over</option>
-                            <option value="فيديوهات طويلة">Long Form Videos</option>
-                            <option value="محتوى تعليمي">Educational Content</option>
-                            <option value="حملة تسويقية">Marketing Campaign</option>
-                            <option value="مشروع خاص">Custom Project</option>
-                        </select>
-                    </div>
-
-                    <div class="form-buttons">
-                        <button type="submit" class="btn-submit">
-                            <i class="fas fa-paper-plane"></i> <span data-i18n="modal.submit">نشر التقييم</span>
-                        </button>
-                        <button type="button" class="btn-cancel" onclick="closeReviewForm()">
-                            <span data-i18n="modal.cancel">إلغاء</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= CONTACT SECTION ================= -->
-    <section id="contact" class="section contact-section">
-        <div class="container">
-            <h2 class="section-title reveal" data-i18n="contact.title">تواصل معي</h2>
-            <p class="section-subtitle reveal" data-i18n="contact.subtitle">للمشاريع والتعاون والاستفسارات</p>
-
-            <div class="contact-content glass reveal">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <div class="contact-icon"><i class="fas fa-envelope"></i></div>
-                        <div class="contact-details">
-                            <h4 data-i18n="contact.email.label">البريد الإلكتروني</h4>
-                            <p id="contact-email">modoelazaka@gmail.com</p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon"><i class="fas fa-phone"></i></div>
-                        <div class="contact-details">
-                            <h4 data-i18n="contact.phone.label">الهاتف / واتساب</h4>
-                            <p id="contact-phone">+201027064867</p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon"><i class="fab fa-behance"></i></div>
-                        <div class="contact-details">
-                            <h4>Behance Portfolio</h4>
-                            <p id="contact-behance"><a href="https://www.behance.net/modoelazaka" class="social-link"
-                                    target="_blank" rel="noopener">Me</a></p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="social-links">
-                    <a href="https://www.tiktok.com/@mahmoudbarakat__" class="social-link" target="_blank"
-                        rel="noopener" title="TikTok">
-                        <i class="fab fa-tiktok"></i>
-                    </a>
-                    <a href="https://instagram.com/barakat_tw" class="social-link" target="_blank" rel="noopener"
-                        title="Instagram">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://www.linkedin.com/in/mahmoud-barakat-126139183/" class="social-link" target="_blank"
-                        rel="noopener" title="LinkedIn">
-                        <i class="fab fa-linkedin"></i>
-                    </a>
-                    <a href="https://wa.me/+201027064867" class="social-link" target="_blank" rel="noopener"
-                        title="WhatsApp">
-                        <i class="fab fa-whatsapp"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
     <!-- ================= FOOTER ================= -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="logo">
-                    <span>⚡ LIGHTNING</span>
-                </div>
-                <p class="copyright">© 2026 Mahmoud Barakat – Video Editor. <span data-i18n="footer.rights">جميع الحقوق
-                        محفوظة.</span></p>
-                <p class="tagline" data-i18n="footer.tagline">صنع بإبداع ❤️</p>
-                <p class="version" id="version-info"><span data-i18n="footer.version">الإصدار 2.0 | تم التحديث:</span>
-                    <span id="last-update"></span>
-                </p>
-                <a href="dashboard.html" class="admin-link" title="لوحة التحكم"><i class="fas fa-lock"></i> <span
+        <div class="container footer-inner">
+            <a href="#home" class="logo"><span class="logo-mark">⚡</span><span class="logo-text">LIGHTNING</span></a>
+            <p class="copyright">© <span id="year">2026</span> Mahmoud Barakat — Video Editor. <span
+                    data-i18n="footer.rights">جميع الحقوق محفوظة.</span></p>
+            <p class="footer-meta">
+                <span data-i18n="footer.version">الإصدار 3.0 · آخر تحديث:</span> <span id="last-update"></span>
+                · <a href="dashboard.html" class="admin-link"><i class="fas fa-lock" aria-hidden="true"></i> <span
                         data-i18n="footer.dashboard">لوحة التحكم</span></a>
-            </div>
+            </p>
         </div>
     </footer>
 
-    <!-- ملفات الجافاسكربت -->
-    <script src="data.js"></script>
-    <script src="render.js"></script>
-    <script src="script.js"></script>
-    <script src="i18n.js"></script>
+    <!-- ================= REVIEW FORM MODAL ================= -->
+    <div id="reviewFormModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="reviewFormTitle" hidden>
+        <div class="modal-panel glass">
+            <header class="modal-head">
+                <h3 id="reviewFormTitle"><i class="fas fa-comment-dots" aria-hidden="true"></i> <span
+                        data-i18n="modal.title">أضف تقييمك</span></h3>
+                <button class="icon-close" type="button" data-close-modal aria-label="إغلاق"><i
+                        class="fas fa-xmark"></i></button>
+            </header>
+            <form id="reviewForm" class="modal-body" novalidate>
+                <p class="form-hint" data-i18n="modal.hint">هيتفتح واتساب برسالة جاهزة فيها تقييمك — اضغط إرسال
+                    وخلاص.</p>
+                <div class="field-row">
+                    <div class="form-group">
+                        <label for="reviewerName" data-i18n="modal.name.label">اسمك</label>
+                        <input type="text" id="reviewerName" name="name" placeholder="ادخل اسمك"
+                            data-i18n-placeholder="modal.name.placeholder" required autocomplete="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewerTitle" data-i18n="modal.role.label">وظيفتك/تخصصك</label>
+                        <input type="text" id="reviewerTitle" name="role" placeholder="مثال: طبيب أسنان، مدير تسويق"
+                            data-i18n-placeholder="modal.role.placeholder" autocomplete="organization-title">
+                    </div>
+                </div>
 
-    <!-- كود مشغل الفيديو -->
-    <!-- كود مشغل الفيديو المباشر (حل نهائي لخطأ 153) -->
-    <!-- كود مشغل الفيديو المباشر (نفس فكرة الكود القديم بدون أي مكتبات خارجية معقدة) -->
-    <script>
-        function setupVideoPlayer() {
-            const videoPlayerModal = document.getElementById('videoPlayerModal');
-            const closeVideoPlayer = document.getElementById('closeVideoPlayer');
+                <div class="form-group">
+                    <span class="label" id="ratingLabel" data-i18n="modal.rating.label">التقييم</span>
+                    <div class="rating-input" role="radiogroup" aria-labelledby="ratingLabel" id="ratingInput">
+                        <button type="button" role="radio" data-rating="1" aria-label="1"><i
+                                class="fas fa-star"></i></button>
+                        <button type="button" role="radio" data-rating="2" aria-label="2"><i
+                                class="fas fa-star"></i></button>
+                        <button type="button" role="radio" data-rating="3" aria-label="3"><i
+                                class="fas fa-star"></i></button>
+                        <button type="button" role="radio" data-rating="4" aria-label="4"><i
+                                class="fas fa-star"></i></button>
+                        <button type="button" role="radio" data-rating="5" aria-label="5"><i
+                                class="fas fa-star"></i></button>
+                        <output id="ratingValue">5 / 5</output>
+                    </div>
+                </div>
 
-            if (closeVideoPlayer) {
-                closeVideoPlayer.addEventListener('click', closeVideoPlayerModal);
-            }
-            if (videoPlayerModal) {
-                videoPlayerModal.addEventListener('click', function (e) {
-                    if (e.target === videoPlayerModal) closeVideoPlayerModal();
-                });
-            }
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape' && videoPlayerModal && videoPlayerModal.style.display === 'flex') {
-                    closeVideoPlayerModal();
-                }
-            });
-        }
+                <div class="form-group">
+                    <label for="reviewText" data-i18n="modal.text.label">تقييمك</label>
+                    <textarea id="reviewText" name="text" rows="4" placeholder="اكتب تقييمك عن تجربة العمل معي..."
+                        data-i18n-placeholder="modal.text.placeholder" required></textarea>
+                </div>
 
-        function closeVideoPlayerModal() {
-            const videoPlayerModal = document.getElementById('videoPlayerModal');
-            const videoPlayerContainer = document.getElementById('videoPlayerContainer');
+                <div class="form-group">
+                    <label for="reviewProject" data-i18n="modal.project.label">نوع المشروع</label>
+                    <select id="reviewProject" name="project">
+                        <option value="" data-i18n="modal.project.placeholder">اختر نوع المشروع</option>
+                        <option>Dental Motion Graphics</option>
+                        <option>Beauty Clinics Videos</option>
+                        <option>Motion + Voice Over</option>
+                        <option>Long Form Videos</option>
+                        <option>Educational Content</option>
+                        <option>Marketing Campaign</option>
+                        <option>Custom Project</option>
+                    </select>
+                </div>
 
-            if (videoPlayerModal) videoPlayerModal.style.display = 'none';
-            if (videoPlayerContainer) videoPlayerContainer.innerHTML = '';
-            document.body.style.overflow = 'auto';
-        }
+                <p class="form-error" id="reviewFormError" hidden data-i18n="modal.error">من فضلك اكتب اسمك
+                    وتقييمك.</p>
 
-        function playVideo(videoId, platform, title = '', type = 'long') {
-            const videoPlayerModal = document.getElementById('videoPlayerModal');
-            const videoPlayerContent = document.getElementById('videoPlayerContent');
-            const videoPlayerContainer = document.getElementById('videoPlayerContainer');
-            const videoInfoOverlay = document.getElementById('videoInfoOverlay');
-            const videoPlayerTitle = document.getElementById('videoPlayerTitle');
-            const videoLoading = document.getElementById('videoLoading');
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fab fa-whatsapp" aria-hidden="true"></i> <span data-i18n="modal.submit">إرسال
+                            التقييم</span>
+                    </button>
+                    <button type="button" class="btn btn-glass" data-close-modal>
+                        <span data-i18n="modal.cancel">إلغاء</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-            // إخفاء مؤشر التحميل فوراً
-            if (videoLoading) videoLoading.style.display = 'none';
-
-            // ضبط فئات الأبعاد (قصير/طويل)
-            if (videoPlayerContent) {
-                videoPlayerContent.classList.remove('aspect-short', 'aspect-long');
-                videoPlayerContent.classList.add(type === 'short' ? 'aspect-short' : 'aspect-long');
-            }
-
-            let embedHtml = '';
-
-            if (platform === 'youtube') {
-                embedHtml = `
-            <iframe 
-                class="video-player-iframe"
-                src="https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0&playsinline=1"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen>
-            </iframe>
-        `;
-            } else if (platform === 'instagram') {
-                embedHtml = `
-            <iframe 
-                class="video-player-iframe"
-                src="https://www.instagram.com/p/${encodeURIComponent(videoId)}/embed"
-                allowfullscreen
-                scrolling="no">
-            </iframe>
-        `;
-            }
-
-            videoPlayerContainer.innerHTML = embedHtml;
-
-            // إظهار العنوان للفيديوهات الطويلة فقط
-            if (title && type !== 'short' && videoInfoOverlay && videoPlayerTitle) {
-                videoInfoOverlay.style.display = 'block';
-                videoPlayerTitle.textContent = title;
-            } else if (videoInfoOverlay) {
-                videoInfoOverlay.style.display = 'none';
-            }
-
-            videoPlayerModal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-        document.addEventListener('DOMContentLoaded', setupVideoPlayer);
-        window.playVideo = playVideo;
-    </script>
+    <!-- ================= VIDEO PLAYER MODAL ================= -->
+    <div id="videoPlayerModal" class="player" role="dialog" aria-modal="true" aria-label="Video player" hidden>
+        <div class="player-frame" id="videoPlayerContent">
+            <div class="player-stage" id="videoPlayerContainer"></div>
+        </div>
+        <div class="player-bar">
+            <p class="player-title" id="videoPlayerTitle"></p>
+            <a href="#" target="_blank" rel="noopener" class="chip-btn" id="videoExternalLink">
+                <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                <span data-i18n="player.watchOn">مشاهدة على المنصة الأصلية</span>
+            </a>
+            <button class="icon-close" id="closeVideoPlayer" type="button" aria-label="إغلاق"><i
+                    class="fas fa-xmark"></i></button>
+        </div>
+    </div>
 </body>
 
 </html>

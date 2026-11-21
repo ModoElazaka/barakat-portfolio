@@ -2,14 +2,19 @@
     "use strict";
 
     var STORAGE_KEY = "mb_site_data_v1";
+    var BASE_KEY = "mb_site_data_base_v1";          // بصمة data.js اللي التعديلات اتبنت عليه
+    var STALE_BACKUP_KEY = "mb_site_data_stale_backup"; // نسخة احتياطية من تعديلات قديمة اتلغت
     var AUTH_SESSION_KEY = "mb_dashboard_auth";
-    // ⚠️ غيّر كلمة المرور هذه قبل رفع الموقع فعلياً. هذه حماية بسيطة فقط
-    // (الكود يعمل بالكامل من المتصفح) وليست حماية أمنية حقيقية — أي شخص
-    // يفتح "عرض المصدر" يمكنه رؤيتها. الهدف فقط منع الدخول العرضي للوحة.
-    var DASHBOARD_PASSWORD = "Hacker@2004";
+    // كلمة المرور محفوظة كـ SHA-256 hash (مش نص صريح) عشان ما تظهرش في "عرض المصدر".
+    // ⚠️ دي حماية بسيطة ضد الدخول العرضي فقط — الموقع static بالكامل، والتعديلات
+    // نفسها بتتحفظ في متصفحك بس ولازم تنشر data.js يدوياً، فمحدش يقدر يغيّر الموقع من هنا.
+    // لتغيير كلمة المرور: افتح Console في المتصفح واكتب  MB_HASH("كلمة_جديدة")
+    // ثم الصق الناتج مكان القيمة دي.
+    var DASHBOARD_PASSWORD_HASH = "0abe654b77bc5da7e3b86bdd7b7ca6f507557ffc2d75aefdd6008867d7351c4d";
     var BUILTIN_SECTION_IDS = ["reels", "long"];
 
     var siteData = null;
+    var staleLocalReplaced = false;
     var uploadedThumbDataUrl = null;
     var toastTimer = null;
 
@@ -46,7 +51,8 @@
             /youtube\.com\/shorts\/([a-zA-Z0-9_-]{6,})/,
             /youtu\.be\/([a-zA-Z0-9_-]{6,})/,
             /youtube\.com\/watch\?[^#]*v=([a-zA-Z0-9_-]{6,})/,
-            /youtube\.com\/embed\/([a-zA-Z0-9_-]{6,})/
+            /youtube\.com\/embed\/([a-zA-Z0-9_-]{6,})/,
+            /youtube\.com\/live\/([a-zA-Z0-9_-]{6,})/
         ];
         for (var i = 0; i < patterns.length; i++) {
             var m = input.match(patterns[i]);
@@ -81,24 +87,102 @@
         }, 3200);
     }
 
+    /* ============================= SHA-256 (بدون مكتبات) ============================= */
+    // تطبيق صغير لـ SHA-256 بيشتغل حتى لو الصفحة مفتوحة من file:// (crypto.subtle بيحتاج https)
+    function sha256(ascii) {
+        function rrot(v, n) { return (v >>> n) | (v << (32 - n)); }
+        var bytes = unescape(encodeURIComponent(ascii));
+        var K = [], H = [], primeCounter = 0, isComposite = {};
+        for (var c = 2; primeCounter < 64; c++) {
+            if (!isComposite[c]) {
+                for (var i = 0; i < 313; i += c) isComposite[i] = c;
+                if (primeCounter < 8) H[primeCounter] = (Math.pow(c, 0.5) * 4294967296) | 0;
+                K[primeCounter++] = (Math.pow(c, 1 / 3) * 4294967296) | 0;
+            }
+        }
+        var words = [], bitLen = bytes.length * 8;
+        bytes += "\x80";
+        while (bytes.length % 64 - 56) bytes += "\x00";
+        for (var j = 0; j < bytes.length; j++) words[j >> 2] |= bytes.charCodeAt(j) << ((3 - j) % 4) * 8;
+        words[words.length] = (bitLen / 4294967296) | 0;
+        words[words.length] = bitLen;
+        for (var b = 0; b < words.length;) {
+            var w = words.slice(b, b += 16), old = H.slice(0, 8);
+            for (var r = 0; r < 64; r++) {
+                var a = H[0], e = H[4];
+                var w15 = w[r - 15], w2 = w[r - 2];
+                var t1 = H[7] + (rrot(e, 6) ^ rrot(e, 11) ^ rrot(e, 25)) + ((e & H[5]) ^ (~e & H[6])) + K[r] +
+                    (w[r] = r < 16 ? w[r] : (w[r - 16] + (rrot(w15, 7) ^ rrot(w15, 18) ^ (w15 >>> 3)) + w[r - 7] +
+                        (rrot(w2, 17) ^ rrot(w2, 19) ^ (w2 >>> 10))) | 0);
+                var t2 = (rrot(a, 2) ^ rrot(a, 13) ^ rrot(a, 22)) + ((a & H[1]) ^ (a & H[2]) ^ (H[1] & H[2]));
+                H = [(t1 + t2) | 0].concat(H);
+                H[4] = (H[4] + t1) | 0;
+                H.length = 8;
+            }
+            for (var k = 0; k < 8; k++) H[k] = (H[k] + old[k]) | 0;
+        }
+        var out = "";
+        for (var x = 0; x < 8; x++) for (var y = 3; y + 1; y--) {
+            var byte = (H[x] >> (y * 8)) & 255;
+            out += (byte < 16 ? "0" : "") + byte.toString(16);
+        }
+        return out;
+    }
+    window.MB_HASH = sha256;
+
     /* ============================= تحميل/حفظ البيانات ============================= */
 
-    function loadData() {
-        try {
-            var raw = localStorage.getItem(STORAGE_KEY);
-            if (raw) {
-                var parsed = JSON.parse(raw);
-                if (parsed && Array.isArray(parsed.sections)) return parsed;
-            }
-        } catch (e) {
-            console.warn("تعذّرت قراءة البيانات المحفوظة محلياً:", e);
-        }
-        return deepClone(window.SITE_DATA || { sections: [] });
+    // بصمة data.js المنشور — لازم تكون نفس الدالة في render.js و dashboard.js
+    function fingerprint(obj) {
+        var s = JSON.stringify(obj || {});
+        var h = 5381;
+        for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+        return (h >>> 0).toString(36) + "-" + s.length;
     }
+
+    function clearLocalCopy() {
+        safeRemove(localStorage, STORAGE_KEY);
+        safeRemove(localStorage, BASE_KEY);
+    }
+
+    // بنستخدم التعديلات المحلية بس لو اتبنت على data.js الحالي.
+    // لو data.js اتغيّر بعدها: بنعرض الجديد، والقديم بيتحفظ نسخة احتياطية (مش بيتمسح).
+    function loadData() {
+        var published = window.SITE_DATA || { sections: [] };
+        var raw = safeGet(localStorage, STORAGE_KEY);
+        if (!raw) return deepClone(published);
+
+        var parsed = null;
+        try { parsed = JSON.parse(raw); } catch (e) { console.warn("تعذّرت قراءة البيانات المحفوظة محلياً:", e); }
+        if (!parsed || !Array.isArray(parsed.sections)) {
+            clearLocalCopy();
+            return deepClone(published);
+        }
+
+        if (safeGet(localStorage, BASE_KEY) === fingerprint(published)) return parsed;
+
+        if (JSON.stringify(parsed) !== JSON.stringify(published)) {
+            safeSet(localStorage, STALE_BACKUP_KEY, raw);
+            staleLocalReplaced = true;
+        }
+        clearLocalCopy();
+        return deepClone(published);
+    }
+
+    // لو احتجت ترجع التعديلات القديمة: افتح Console واكتب MB_RESTORE_STALE_BACKUP()
+    window.MB_RESTORE_STALE_BACKUP = function () {
+        var raw = safeGet(localStorage, STALE_BACKUP_KEY);
+        if (!raw) return "مفيش نسخة احتياطية.";
+        safeSet(localStorage, STORAGE_KEY, raw);
+        safeSet(localStorage, BASE_KEY, fingerprint(window.SITE_DATA || { sections: [] }));
+        location.reload();
+        return "تم الاسترجاع.";
+    };
 
     function saveData() {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(siteData));
+            localStorage.setItem(BASE_KEY, fingerprint(window.SITE_DATA || { sections: [] }));
         } catch (e) {
             showToast("تعذّر الحفظ محلياً — قد تكون الصور المرفوعة كبيرة جداً على مساحة تخزين المتصفح.", true);
             console.error(e);
@@ -251,7 +335,14 @@
         $("newDepartmentFields").hidden = $("destDepartment").value !== "__new__";
     }
 
+    // بنحفظ orientation بس لو اتحدد يدوياً (الافتراضي بيتحسب من النوع)
+    function withOrientation(video, orientation) {
+        if (orientation === "portrait" || orientation === "landscape") video.orientation = orientation;
+        return video;
+    }
+
     function resetVideoFieldsOnly() {
+        $("videoOrientation").value = "";
         $("videoUrl").value = "";
         $("videoTitle").value = "";
         $("videoThumbUrl").value = "";
@@ -275,6 +366,7 @@
         $("editingUid").value = uid;
         $("videoPlatform").value = v.platform;
         $("videoType").value = v.type;
+        $("videoOrientation").value = v.orientation || "";
         $("videoUrl").value = v.videoId;
         $("videoTitle").value = v.title || "";
 
@@ -310,6 +402,7 @@
 
         var platform = $("videoPlatform").value;
         var type = $("videoType").value;
+        var orientation = $("videoOrientation").value;
         var rawUrl = $("videoUrl").value.trim();
         var title = $("videoTitle").value.trim();
 
@@ -380,10 +473,10 @@
         if (editingUid) {
             var loc = findVideoLocation(editingUid);
             if (loc) loc.department.videos.splice(loc.index, 1);
-            targetDept.videos.push({ uid: editingUid, videoId: videoId, platform: platform, type: type, title: title, thumbnail: thumbnail });
+            targetDept.videos.push(withOrientation({ uid: editingUid, videoId: videoId, platform: platform, type: type, title: title, thumbnail: thumbnail }, orientation));
             showToast("تم حفظ تعديلات الفيديو.");
         } else {
-            targetDept.videos.push({ uid: genId("v"), videoId: videoId, platform: platform, type: type, title: title, thumbnail: thumbnail });
+            targetDept.videos.push(withOrientation({ uid: genId("v"), videoId: videoId, platform: platform, type: type, title: title, thumbnail: thumbnail }, orientation));
             showToast("تمت إضافة الفيديو بنجاح.");
         }
 
@@ -425,14 +518,18 @@
             '<div class="section-edit-slot"></div>' +
             '<div class="tree-departments">' +
             (sec.departments.length
-                ? sec.departments.map(function (dep) { return renderTreeDepartment(sec, dep); }).join("")
+                ? sec.departments.map(function (dep, idx) { return renderTreeDepartment(sec, dep, idx); }).join("")
                 : '<p class="empty-note">لا توجد فئات في هذا القسم بعد.</p>') +
             "</div>" +
             "</div>"
         );
     }
 
-    function renderTreeDepartment(sec, dep) {
+    function renderTreeDepartment(sec, dep, idx) {
+        var total = sec.departments.length;
+        var ids = 'data-section="' + esc(sec.id) + '" data-dept="' + esc(dep.id) + '"';
+        // الفئات بعد أول 3 بتظهر في الموقع ورا زر "عرض المزيد"
+        var hiddenNote = idx >= 3 ? '<span class="tree-badge" title="تظهر في الموقع بعد الضغط على عرض المزيد">ورا "عرض المزيد"</span>' : "";
         return (
             '<div class="tree-department" data-section="' + esc(sec.id) + '" data-dept="' + esc(dep.id) + '">' +
             '<div class="tree-department-head">' +
@@ -440,8 +537,11 @@
             (dep.icon ? '<i class="fas ' + esc(dep.icon) + '"></i>' : '<i class="fas fa-folder"></i>') +
             (dep.title && dep.title.trim() ? esc(dep.title) : "(بدون عنوان فرعي)") +
             '<span class="tree-badge">' + dep.videos.length + "</span>" +
+            hiddenNote +
             "</div>" +
             '<div class="tree-actions">' +
+            '<button class="icon-btn" data-action="dept-up" ' + ids + ' title="تحريك لأعلى" ' + (idx === 0 ? "disabled" : "") + '><i class="fas fa-arrow-up"></i></button>' +
+            '<button class="icon-btn" data-action="dept-down" ' + ids + ' title="تحريك لأسفل" ' + (idx === total - 1 ? "disabled" : "") + '><i class="fas fa-arrow-down"></i></button>' +
             '<button class="icon-btn" data-action="edit-department" data-section="' + esc(sec.id) + '" data-dept="' + esc(dep.id) + '"><i class="fas fa-pen"></i></button>' +
             '<button class="icon-btn danger" data-action="delete-department" data-section="' + esc(sec.id) + '" data-dept="' + esc(dep.id) + '"><i class="fas fa-trash"></i></button>' +
             "</div>" +
@@ -465,7 +565,7 @@
             '<div class="tree-video-thumb">' + thumbHTML + "</div>" +
             '<div class="tree-video-info">' +
             '<div class="v-title">' + esc(v.title) + "</div>" +
-            '<div class="v-meta"><span><i class="fab ' + platformIcon + '"></i> ' + (v.platform === "instagram" ? "انستقرام" : "يوتيوب") + "</span><span>" + (v.type === "long" ? "طويل" : "قصير") + "</span></div>" +
+            '<div class="v-meta"><span><i class="fab ' + platformIcon + '"></i> ' + (v.platform === "instagram" ? "انستقرام" : "يوتيوب") + "</span><span>" + (v.type === "long" ? "طويل" : "قصير") + "</span>" + (v.orientation ? "<span>" + (v.orientation === "landscape" ? "عرضي 16:9" : "طولي 9:16") + "</span>" : "") + "</div>" +
             "</div>" +
             '<div class="tree-video-actions">' +
             '<button class="icon-btn" data-action="move-up" data-uid="' + esc(v.uid) + '" ' + (idx === 0 ? "disabled" : "") + '><i class="fas fa-arrow-up"></i></button>' +
@@ -614,6 +714,20 @@
         saveData();
     }
 
+    function moveDepartment(sectionId, deptId, dir) {
+        var sec = findSection(sectionId);
+        if (!sec) return;
+        var arr = sec.departments;
+        var i = arr.findIndex(function (d) { return d.id === deptId; });
+        var j = i + dir;
+        if (i < 0 || j < 0 || j >= arr.length) return;
+        var tmp = arr[j];
+        arr[j] = arr[i];
+        arr[i] = tmp;
+        saveData();
+        refreshDestinationSelectors();
+    }
+
     function handleManageTreeClick(e) {
         var btn = e.target.closest("[data-action]");
         if (!btn || btn.disabled) return;
@@ -626,6 +740,8 @@
         else if (action === "delete-video") deleteVideo(uid);
         else if (action === "move-up") moveVideo(uid, -1);
         else if (action === "move-down") moveVideo(uid, 1);
+        else if (action === "dept-up") moveDepartment(sectionId, deptId, -1);
+        else if (action === "dept-down") moveDepartment(sectionId, deptId, 1);
         else if (action === "delete-section") deleteSection(sectionId);
         else if (action === "delete-department") deleteDepartment(sectionId, deptId);
         else if (action === "edit-section") toggleSectionEditForm(sectionId);
@@ -699,7 +815,7 @@
 
     function handleResetData() {
         if (!window.confirm("سيتم إلغاء كل التعديلات المحلية غير المنشورة والعودة لآخر نسخة data.js. هل تريد المتابعة؟")) return;
-        safeRemove(localStorage, STORAGE_KEY);
+        clearLocalCopy();
         siteData = deepClone(window.SITE_DATA || { sections: [] });
         $("unsavedBadge").hidden = true;
         renderManageTree();
@@ -713,6 +829,9 @@
     function initDashboard() {
         siteData = loadData();
         $("unsavedBadge").hidden = !safeGet(localStorage, STORAGE_KEY);
+        if (staleLocalReplaced) {
+            showToast("ملف data.js اتحدّث بعد آخر تعديلات محلية — بنعرض النسخة الجديدة، والتعديلات القديمة اتحفظت كنسخة احتياطية.");
+        }
 
         renderManageTree();
         refreshDestinationSelectors();
@@ -815,7 +934,7 @@
             $("authForm").addEventListener("submit", function (e) {
                 e.preventDefault();
                 var val = $("authPassword").value.trim();
-                if (val === DASHBOARD_PASSWORD) {
+                if (sha256(val) === DASHBOARD_PASSWORD_HASH) {
                     safeSet(sessionStorage, AUTH_SESSION_KEY, "ok");
                     showApp();
                 } else {

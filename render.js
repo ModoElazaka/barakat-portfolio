@@ -1,30 +1,52 @@
 /*
   render.js
   ---------------------------------------------------------------
-  يبني هذا الملف كل الأقسام والفئات والفيديوهات في الصفحة اعتماداً
-  على البيانات في data.js (أو النسخة المحفوظة محلياً من لوحة التحكم).
+  يبني الأقسام والفئات وبطاقات الفيديو من data.js
+  (أو من النسخة المحفوظة محلياً من لوحة التحكم إن وُجدت).
+  لا يحتوي على أي منطق تفاعلي — التفاعل كله في script.js.
   ---------------------------------------------------------------
 */
 (function () {
     "use strict";
 
     var STORAGE_KEY = "mb_site_data_v1";
+    // نسخة data.js اللي التعديلات المحلية اتبنت عليها
+    var BASE_KEY = "mb_site_data_base_v1";
     var BUILTIN_SECTION_IDS = ["reels", "long"];
+    // عدد الفئات اللي بتظهر مباشرة في كل قسم؛ الباقي ورا زر "عرض المزيد"
+    // (الترتيب نفسه بيتحدد من لوحة التحكم — الأقوى فوق)
+    var VISIBLE_DEPARTMENTS = 3;
 
+    /* ---------- data ---------- */
+
+    // بصمة data.js المنشور — لازم تكون نفس الدالة في render.js و dashboard.js
+    function fingerprint(obj) {
+        var s = JSON.stringify(obj || {});
+        var h = 5381;
+        for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+        return (h >>> 0).toString(36) + "-" + s.length;
+    }
+
+    // النسخة المحلية من لوحة التحكم بتتعرض بس لو اتبنت على data.js الحالي.
+    // لو data.js اتغيّر بعدها (مثلاً اتضافت فيديوهات جديدة) بنعرض data.js،
+    // عشان نسخة قديمة في المتصفح ما تخفيش المحتوى الجديد.
     function getData() {
+        var published = window.SITE_DATA || { sections: [] };
         try {
             var raw = window.localStorage.getItem(STORAGE_KEY);
-            if (raw) {
+            if (raw && window.localStorage.getItem(BASE_KEY) === fingerprint(published)) {
                 var parsed = JSON.parse(raw);
                 if (parsed && Array.isArray(parsed.sections)) return parsed;
             }
         } catch (e) {
-            console.warn("تعذّرت قراءة بيانات لوحة التحكم المحفوظة محلياً، سيتم استخدام data.js:", e);
+            console.warn("Local dashboard data unreadable, falling back to data.js", e);
         }
-        return window.SITE_DATA || { sections: [] };
+        return published;
     }
 
-    function escapeAttr(str) {
+    /* ---------- helpers ---------- */
+
+    function esc(str) {
         return String(str == null ? "" : str)
             .replace(/&/g, "&amp;")
             .replace(/"/g, "&quot;")
@@ -33,99 +55,126 @@
             .replace(/>/g, "&gt;");
     }
 
-    function escapeHtml(str) {
-        return String(str == null ? "" : str)
-            .replace(/&/g, "&amp;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#39;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
+    // يسمح فقط بأسماء أيقونات Font Awesome (fa-xxx) لتجنّب حقن classes غريبة
+    function safeIcon(icon) {
+        return /^fa-[a-z0-9-]+$/.test(icon || "") ? icon : "";
     }
 
-    function jsStringLiteral(str) {
-        return String(str == null ? "" : str).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    // شكل الفيديو الحقيقي (للمشغل): لو مش محدد، القصير طولي والطويل عرضي
+    function orientationOf(v) {
+        if (v.orientation === "portrait" || v.orientation === "landscape") return v.orientation;
+        return v.type === "long" ? "landscape" : "portrait";
     }
 
-    function youtubeThumb(videoId) {
-        return "https://img.youtube.com/vi/" + encodeURIComponent(videoId) + "/hqdefault.jpg";
+    function thumbnailFor(v) {
+        if (v.thumbnail) return v.thumbnail;
+        if (v.platform === "youtube" && v.videoId) {
+            // فيديو عرضي معروض في كارت طولي: mqdefault (16:9 بدون شرائط سودا) عشان القص يطلع نضيف
+            var file = v.type !== "long" && orientationOf(v) === "landscape" ? "mqdefault" : "hqdefault";
+            return "https://i.ytimg.com/vi/" + encodeURIComponent(v.videoId) + "/" + file + ".jpg";
+        }
+        return "";
     }
+
+    /* ---------- templates ---------- */
 
     function videoCardHTML(v) {
         var isLong = v.type === "long";
-        var cardClass = isLong ? "long-video" : "reels-video";
-        var thumb = v.thumbnail;
-        if (!thumb) {
-            thumb = v.platform === "youtube" ? youtubeThumb(v.videoId) : "";
-        }
-        var platformIcon = v.platform === "instagram" ? "fa-instagram" : "fa-youtube";
-        var titleAttr = escapeAttr(v.title);
-        var onclickTitle = jsStringLiteral(v.title || "");
-        var onclickVideoId = jsStringLiteral(v.videoId || "");
-        var onclickPlatform = jsStringLiteral(v.platform || "youtube");
+        var platform = v.platform === "instagram" ? "instagram" : "youtube";
+        var thumb = thumbnailFor(v);
+        var title = v.title || "";
 
-        var thumbHTML = thumb 
-            ? '<img src="' + escapeAttr(thumb) + '" alt="' + titleAttr + '" loading="lazy">'
-            : '<div class="video-thumb-placeholder"><i class="fab ' + platformIcon + '"></i></div>';
-
-        var infoHTML = isLong 
-            ? '<div class="video-info"><h4>' + escapeHtml(v.title) + "</h4></div>" 
-            : "";
+        var media = thumb
+            ? '<img src="' + esc(thumb) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-fallback="fa-' + platform + '">'
+            : '<span class="video-thumb-placeholder"><i class="fab fa-' + platform + '"></i></span>';
 
         return (
-            '<div class="video-card ' + cardClass + '">' +
-            '<div class="video-thumbnail">' +
-            thumbHTML +
-            '<div class="video-platform-badge"><i class="fab ' + platformIcon + '"></i></div>' +
-            '<div class="play-btn" onclick="playVideo(\'' + onclickVideoId + "', '" + onclickPlatform + "', '" + onclickTitle + "', '" + (isLong ? "long" : "short") + '\')">' +
-            '<i class="fas fa-play"></i>' +
-            "</div>" +
-            '<div class="video-overlay"></div>' +
-            "</div>" +
-            infoHTML +
-            "</div>"
+            '<button type="button" class="video-card ' + (isLong ? "is-long" : "is-short") + '"' +
+            ' data-video-id="' + esc(v.videoId) + '"' +
+            ' data-platform="' + platform + '"' +
+            ' data-type="' + (isLong ? "long" : "short") + '"' +
+            ' data-orientation="' + orientationOf(v) + '"' +
+            ' data-title="' + esc(title) + '"' +
+            ' aria-label="' + esc(title || "Play video") + '">' +
+            '<span class="video-thumb">' + media +
+            '<span class="video-platform" aria-hidden="true"><i class="fab fa-' + platform + '"></i></span>' +
+            '<span class="video-play" aria-hidden="true"><i class="fas fa-play"></i></span>' +
+            (isLong ? "" : '<span class="video-caption">' + esc(title) + "</span>") +
+            "</span>" +
+            (isLong ? '<span class="video-info">' + esc(title) + "</span>" : "") +
+            "</button>"
         );
     }
 
     function departmentHTML(dep) {
-        var hasHeader = dep.title && dep.title.trim().length > 0;
-        var iconHTML = dep.icon ? '<i class="fas ' + escapeAttr(dep.icon) + '"></i>' : "";
-        var headerHTML = "";
-        if (hasHeader) {
-            headerHTML =
-                '<h3 class="category-title">' + iconHTML + escapeHtml(dep.title) + "</h3>" +
-                (dep.description ? '<p class="category-description">' + escapeHtml(dep.description) + "</p>" : "");
-        }
-        var videosHTML = (dep.videos || []).map(videoCardHTML).join("");
+        var videos = dep.videos || [];
+        if (!videos.length) return "";
+
+        var hasTitle = dep.title && dep.title.trim();
+        var icon = safeIcon(dep.icon);
+        var head =
+            '<div class="category-head">' +
+            "<div>" +
+            (hasTitle
+                ? '<h3 class="category-title">' + (icon ? '<i class="fas ' + icon + '" aria-hidden="true"></i>' : "") + esc(dep.title) + "</h3>"
+                : "") +
+            (dep.description ? '<p class="category-desc">' + esc(dep.description) + "</p>" : "") +
+            "</div>" +
+            '<div class="carousel-controls" hidden>' +
+            '<button type="button" class="carousel-btn" data-dir="-1" aria-label="Previous"><i class="fas fa-chevron-right"></i></button>' +
+            '<button type="button" class="carousel-btn" data-dir="1" aria-label="Next"><i class="fas fa-chevron-left"></i></button>' +
+            "</div>" +
+            "</div>";
+
         return (
-            '<div class="category-section glass reveal" data-department-id="' + escapeAttr(dep.id) + '">' +
-            headerHTML +
-            '<div class="videos-grid" id="' + escapeAttr(dep.id) + '">' + videosHTML + "</div>" +
+            '<div class="category glass reveal" data-department-id="' + esc(dep.id) + '">' +
+            head +
+            '<div class="carousel" id="' + esc(dep.id) + '">' + videos.map(videoCardHTML).join("") + "</div>" +
+            "</div>"
+        );
+    }
+
+    // يبني فئات القسم: أول VISIBLE_DEPARTMENTS ظاهرين والباقي مخفي لحد ما الزائر يطلبه.
+    // الصور جوه الجزء المخفي lazy فمش بتتحمّل غير لما يفتحه.
+    function departmentsHTML(departments) {
+        var visible = (departments || []).filter(function (d) { return d.videos && d.videos.length; });
+        var shown = visible.slice(0, VISIBLE_DEPARTMENTS).map(departmentHTML).join("");
+        var rest = visible.slice(VISIBLE_DEPARTMENTS);
+        if (!rest.length) return shown;
+
+        var restVideos = rest.reduce(function (n, d) { return n + d.videos.length; }, 0);
+        return (
+            shown +
+            '<div class="more-departments" hidden>' + rest.map(departmentHTML).join("") + "</div>" +
+            '<div class="see-more-wrap">' +
+            '<button type="button" class="btn btn-glass see-more" aria-expanded="false"' +
+            ' data-categories="' + rest.length + '" data-videos="' + restVideos + '">' +
+            '<span class="see-more-label"></span> <i class="fas fa-chevron-down" aria-hidden="true"></i>' +
+            "</button>" +
             "</div>"
         );
     }
 
     function sectionHTML(section) {
         return (
-            '<section id="' + escapeAttr(section.id) + '" class="section">' +
+            '<section id="' + esc(section.id) + '" class="section">' +
             '<div class="container">' +
-            '<h2 class="section-title reveal">' + escapeHtml(section.title) + "</h2>" +
-            (section.subtitle ? '<p class="section-subtitle reveal">' + escapeHtml(section.subtitle) + "</p>" : "") +
-            '<div id="deps-' + escapeAttr(section.id) + '">' +
-            (section.departments || []).map(departmentHTML).join("") +
-            "</div>" +
+            '<header class="section-head reveal">' +
+            '<h2 class="section-title">' + esc(section.title) + "</h2>" +
+            (section.subtitle ? '<p class="section-subtitle">' + esc(section.subtitle) + "</p>" : "") +
+            "</header>" +
+            departmentsHTML(section.departments) +
             "</div>" +
             "</section>"
         );
     }
 
     function renderNav(sections) {
-        var navLinks = document.querySelector(".nav-links");
-        if (!navLinks) return;
+        var nav = document.getElementById("navLinks");
+        if (!nav) return;
 
-        var existing = navLinks.querySelectorAll('[data-dynamic-nav="1"]');
-        for (var i = 0; i < existing.length; i++) existing[i].parentNode.removeChild(existing[i]);
-
-        var reviewsLink = navLinks.querySelector('a[href="#reviews"]');
+        nav.querySelectorAll('[data-dynamic-nav]').forEach(function (a) { a.remove(); });
+        var before = nav.querySelector('a[href="#reviews"]');
 
         sections.forEach(function (sec) {
             if (BUILTIN_SECTION_IDS.indexOf(sec.id) !== -1) return;
@@ -133,52 +182,50 @@
             a.href = "#" + sec.id;
             a.className = "nav-link";
             a.textContent = sec.navLabel || sec.title || sec.id;
-            a.setAttribute("data-dynamic-nav", "1");
-            if (reviewsLink) {
-                navLinks.insertBefore(a, reviewsLink);
-            } else {
-                navLinks.appendChild(a);
-            }
+            a.setAttribute("data-dynamic-nav", "");
+            nav.insertBefore(a, before);
         });
     }
 
-    function render(options) {
-        options = options || {};
+    /* ---------- thumbnail fallback ---------- */
+    // روابط صور انستقرام بتنتهي صلاحيتها؛ لو الصورة فشلت نعرض أيقونة المنصة بدلها.
+    // بيتسجل هنا (قبل أي صورة) عشان ما يفوتناش خطأ تحميل بدري.
+    document.addEventListener("error", function (e) {
+        var img = e.target;
+        if (!(img instanceof HTMLImageElement) || !img.hasAttribute("data-fallback")) return;
+        var ph = document.createElement("span");
+        ph.className = "video-thumb-placeholder";
+        ph.innerHTML = '<i class="fab ' + esc(img.getAttribute("data-fallback")) + '"></i>';
+        img.replaceWith(ph);
+    }, true);
+
+    /* ---------- render ---------- */
+
+    function render() {
         var data = getData();
         if (!data || !Array.isArray(data.sections)) return;
 
         data.sections.forEach(function (sec) {
-            if (sec.id === "reels") {
-                var reelsContainer = document.getElementById("reels-departments");
-                if (reelsContainer) reelsContainer.innerHTML = (sec.departments || []).map(departmentHTML).join("");
-            } else if (sec.id === "long") {
-                var longContainer = document.getElementById("long-departments");
-                if (longContainer) longContainer.innerHTML = (sec.departments || []).map(departmentHTML).join("");
-            }
+            var target = sec.id === "reels" ? "reels-departments" : sec.id === "long" ? "long-departments" : null;
+            var el = target && document.getElementById(target);
+            if (el) el.innerHTML = departmentsHTML(sec.departments);
         });
 
-        var dynContainer = document.getElementById("dynamic-sections-container");
-        if (dynContainer) {
-            var customSections = data.sections.filter(function (s) {
-                return BUILTIN_SECTION_IDS.indexOf(s.id) === -1;
-            });
-            dynContainer.innerHTML = customSections.map(sectionHTML).join("");
+        var dyn = document.getElementById("dynamic-sections-container");
+        if (dyn) {
+            dyn.innerHTML = data.sections
+                .filter(function (s) { return BUILTIN_SECTION_IDS.indexOf(s.id) === -1; })
+                .map(sectionHTML)
+                .join("");
         }
 
         renderNav(data.sections);
-
-        if (options.immediate) {
-            var reveals = document.querySelectorAll(".reveal");
-            for (var i = 0; i < reveals.length; i++) reveals[i].classList.add("show");
-        }
-
-        if (typeof window.setupVideoHoverEffects === "function") {
-            window.setupVideoHoverEffects();
-        }
+        document.dispatchEvent(new CustomEvent("mb:rendered"));
     }
 
+    // تحديث فوري لو اتعدّلت البيانات من لوحة التحكم في تبويب آخر
     window.addEventListener("storage", function (e) {
-        if (e.key === STORAGE_KEY) render({ immediate: true });
+        if (e.key === STORAGE_KEY) render();
     });
 
     window.MB_RENDER = render;

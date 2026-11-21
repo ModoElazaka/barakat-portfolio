@@ -1,7 +1,7 @@
 /*
-  data.js — تم توليده من لوحة التحكم بتاريخ ٢١‏/٩‏/٢٠٢٦، ٣:٤٧:٥٢ م
-  استبدل ملف data.js في مجلد الموقع بهذا الملف، ثم أعد رفع الموقع حتى تظهر
-  التعديلات لكل الزوار.
+  data.js — محتوى الأقسام والفيديوهات (بيتولّد من لوحة التحكم)
+  آخر تحديث: 2026-11-20 — ترتيب الأقسام والفيديوهات (الأقوى أولاً)
+  لتعديل المحتوى: استخدم dashboard.html ثم حمّل data.js الجديد واستبدل الملف ده.
 */
 window.SITE_DATA = {
   "sections": [
@@ -12,17 +12,97 @@ window.SITE_DATA = {
       "subtitle": "أعمالي في الريلز والمقاطع القصيرة",
       "departments": [
         {
+          "id": "motion-videos",
+          "icon": "fa-film",
+          "title": "Motion Graphics (Collage & more)",
+          "description": "مقاطع موشن جرافيك بأنواعها لفيديوهات التعليق الصوتي",
+          "videos": [
+            {
+              "uid": "m3",
+              "videoId": "wzbFL6QYwNw",
+              "platform": "youtube",
+              "type": "short",
+              "title": "collage style motion graphics video",
+              "orientation": "landscape"
+            },
+            {
+              "uid": "m1",
+              "videoId": "ao77WZLEGyM",
+              "platform": "youtube",
+              "type": "short",
+              "title": "true football player"
+            },
+            {
+              "uid": "m2",
+              "videoId": "XRtqupsitm8",
+              "platform": "youtube",
+              "type": "short",
+              "title": "motion graphics"
+            }
+          ]
+        },
+        {
+          "id": "app-promo-videos",
+          "icon": "fa-mobile-screen-button",
+          "title": "App Promo & UI Motion",
+          "description": "فيديوهات ترويجية للتطبيقات والمنصات بأنيميشن واجهات احترافي",
+          "videos": [
+            {
+              "uid": "a3",
+              "videoId": "jjgr1KoStMY",
+              "platform": "youtube",
+              "type": "short",
+              "title": "GymCenter"
+            },
+            {
+              "uid": "a1",
+              "videoId": "ATfbAwB7gwM",
+              "platform": "youtube",
+              "type": "short",
+              "title": "EduCenter — No one sees it all"
+            },
+            {
+              "uid": "a5",
+              "videoId": "Kxjdr8bJiPQ",
+              "platform": "youtube",
+              "type": "short",
+              "title": "Shianur — ورّده"
+            },
+            {
+              "uid": "a2",
+              "videoId": "Z2nJiEeMC3I",
+              "platform": "youtube",
+              "type": "short",
+              "title": "EduCenter"
+            },
+            {
+              "uid": "a4",
+              "videoId": "1qVcYVKRwcI",
+              "platform": "youtube",
+              "type": "short",
+              "title": "Shianur — أذكار"
+            }
+          ]
+        },
+        {
           "id": "dental-videos",
           "icon": "fa-tooth",
           "title": "Dental Motion Graphics",
           "description": "مقاطع موشن جرافيك متخصصة في مجال طب الأسنان والعيادات السنية",
           "videos": [
             {
-              "uid": "d1",
-              "videoId": "K6mfN9dyOAY",
+              "uid": "d4",
+              "videoId": "ofBq5JCMh-0",
               "platform": "youtube",
               "type": "short",
-              "title": "تركيبات اسنان"
+              "title": "Dental Video Edit"
+            },
+            {
+              "uid": "d5",
+              "videoId": "Jv-D7k7_BeQ",
+              "platform": "youtube",
+              "type": "short",
+              "title": "حالة تقويم"
             },
             {
               "uid": "d2",
@@ -30,6 +110,13 @@ window.SITE_DATA = {
               "platform": "youtube",
               "type": "short",
               "title": "تركيبات اسنان 2 بدون موسيقى"
+            },
+            {
+              "uid": "d1",
+              "videoId": "K6mfN9dyOAY",
+              "platform": "youtube",
+              "type": "short",
+              "title": "تركيبات اسنان"
             },
             {
               "uid": "d3",
@@ -41,24 +128,46 @@ window.SITE_DATA = {
           ]
         },
         {
+          "id": "brands-videos",
+          "icon": "fa-store",
+          "title": "Brands & Restaurants",
+          "description": "إعلانات ومحتوى ترويجي للبراندات والمطاعم والشركات",
+          "videos": [
+            {
+              "uid": "b1",
+              "videoId": "XwzYd4Y8oqY",
+              "platform": "youtube",
+              "type": "short",
+              "title": "مطعم شاورما — مليون مشاهدة على انستجرام"
+            },
+            {
+              "uid": "b2",
+              "videoId": "2iyFBhssghc",
+              "platform": "youtube",
+              "type": "short",
+              "title": "Smart Kitchen"
+            }
+          ]
+        },
+        {
           "id": "clinics-videos",
           "icon": "fa-stethoscope",
           "title": "Beauty Clinics Videos",
           "description": "مقاطع ترويجية وتعليمية لعيادات التجميل والتجميل الطبي",
           "videos": [
             {
-              "uid": "c1",
-              "videoId": "sttWYKD5EaM",
-              "platform": "youtube",
-              "type": "short",
-              "title": "dr shimaa Z-clinic vid 4"
-            },
-            {
               "uid": "c2",
               "videoId": "W4MUDlYyS3c",
               "platform": "youtube",
               "type": "short",
               "title": "animation"
+            },
+            {
+              "uid": "c1",
+              "videoId": "sttWYKD5EaM",
+              "platform": "youtube",
+              "type": "short",
+              "title": "dr shimaa Z-clinic vid 4"
             },
             {
               "uid": "c3",
@@ -76,6 +185,20 @@ window.SITE_DATA = {
           "description": "مقاطع يتحدث فيها شخص امام الكاميرا مباشرة عن شي معين",
           "videos": [
             {
+              "uid": "t2",
+              "videoId": "Pu8EMSssXbw",
+              "platform": "youtube",
+              "type": "short",
+              "title": "ا. خالد المحامي 1"
+            },
+            {
+              "uid": "t3",
+              "videoId": "HIjp2RFsImU",
+              "platform": "youtube",
+              "type": "short",
+              "title": "الفارس الشهم"
+            },
+            {
               "uid": "t1",
               "videoId": "CmKgbE_9iV8",
               "platform": "youtube",
@@ -89,49 +212,6 @@ window.SITE_DATA = {
               "type": "short",
               "title": "فيديو قصير عن زراعة الاسنان",
               "thumbnail": "https://scontent-arn2-1.cdninstagram.com/v/t51.82787-15/763700823_17910970842469300_2743973447986627400_n.jpg?stp=dst-jpg_e15_s640x640_tt6&_nc_cat=109&ig_cache_key=Mzk1NDg0ODM2NzI0MzM3NjIyMDE3OTEwOTcwODM2NDY5MzAw.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjEwODAuc2RyLnZpZGVvX2RlZmF1bHRfY292ZXJfZnJhbWUuQzMifQ%3D%3D&_nc_ohc=PpcBndeJupUQ7kNvwF1HDFZ&_nc_oc=AdoDdD8c1gPPk12uGClncB6XwPVmBvJriCDmCAaYwhzjqo8q6z1LxZV7Cy28jEe7ogM&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-arn2-1.cdninstagram.com&_nc_gid=DrVrRmsDSEYIHPc7vzUyyQ&_nc_ss=7a3ba&oh=00_AQImc9mJapIUpSAxZLloJqRS3LcoqC_EizzdpkJaUdyuaw&oe=6AB70976"
-            },
-            {
-              "uid": "t2",
-              "videoId": "Pu8EMSssXbw",
-              "platform": "youtube",
-              "type": "short",
-              "title": "ا. خالد المحامي 1"
-            },
-            {
-              "uid": "t3",
-              "videoId": "HIjp2RFsImU",
-              "platform": "youtube",
-              "type": "short",
-              "title": "الفارس الشهم"
-            }
-          ]
-        },
-        {
-          "id": "motion-videos",
-          "icon": "fa-film",
-          "title": "Motion graphics(collage and more..)",
-          "description": "مقاطع موشن جرافيك بأنواعها لفيديوهات التعليق الصوتي",
-          "videos": [
-            {
-              "uid": "m1",
-              "videoId": "ao77WZLEGyM",
-              "platform": "youtube",
-              "type": "short",
-              "title": "true football player"
-            },
-            {
-              "uid": "m2",
-              "videoId": "XRtqupsitm8",
-              "platform": "youtube",
-              "type": "short",
-              "title": "motion graphics"
-            },
-            {
-              "uid": "m3",
-              "videoId": "wzbFL6QYwNw",
-              "platform": "youtube",
-              "type": "short",
-              "title": "collage style motion graphics video"
             }
           ]
         }

@@ -218,6 +218,30 @@ window.SITE_DATA = {
       ]
     },
     {
+      "id": "ai-videos",
+      "navLabel": "Ai Videos",
+      "title": "Ai Videos",
+      "subtitle": "إعلانات وفيديوهات معمولة بالذكاء الاصطناعي",
+      "placement": "after-reels",
+      "departments": [
+        {
+          "id": "ai-videos-dept",
+          "icon": "",
+          "title": "",
+          "description": "",
+          "videos": [
+            {
+              "uid": "ai1",
+              "videoId": "xVL3rz8nJeI",
+              "platform": "youtube",
+              "type": "short",
+              "title": "AI Ad"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "long",
       "navLabel": "الفيديوهات الطويلة",
       "title": "Long Form Videos",

@@ -89,7 +89,6 @@
 
             "footer.rights": "جميع الحقوق محفوظة.",
             "footer.version": "الإصدار 3.0 · آخر تحديث:",
-            "footer.dashboard": "لوحة التحكم",
 
             "player.watchOn": "مشاهدة على المنصة الأصلية"
         },
@@ -169,7 +168,6 @@
 
             "footer.rights": "All rights reserved.",
             "footer.version": "Version 3.0 · Last updated:",
-            "footer.dashboard": "Dashboard",
 
             "player.watchOn": "Watch on original platform"
         }

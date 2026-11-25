@@ -24,12 +24,12 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
-    <link rel="stylesheet" href="style.css?v=3.0.1">
+    <link rel="stylesheet" href="style.css?v=3.0.2">
 
-    <script defer src="data.js?v=3.0.1"></script>
-    <script defer src="render.js?v=3.0.1"></script>
-    <script defer src="i18n.js?v=3.0.1"></script>
-    <script defer src="script.js?v=3.0.1"></script>
+    <script defer src="data.js?v=3.0.2"></script>
+    <script defer src="render.js?v=3.0.2"></script>
+    <script defer src="i18n.js?v=3.0.2"></script>
+    <script defer src="script.js?v=3.0.2"></script>
 </head>
 
 <body>
@@ -245,6 +245,9 @@
             </div>
         </section>
 
+        <!-- أقسام من لوحة التحكم مكانها تحت الريلز (placement: "after-reels") -->
+        <div id="after-reels-sections"></div>
+
         <!-- ================= LONG FORM ================= -->
         <section id="long" class="section">
             <div class="container">
@@ -455,12 +458,10 @@
     <footer class="footer">
         <div class="container footer-inner">
             <a href="#home" class="logo"><span class="logo-mark">⚡</span><span class="logo-text">LIGHTNING</span></a>
-            <p class="copyright">© <span id="year">2026</span> Mahmoud Barakat — Video Editor. <span
+            <p class="copyright"><a href="dashboard.html" class="quiet-link" tabindex="-1">©</a> <span id="year">2026</span> Mahmoud Barakat — Video Editor. <span
                     data-i18n="footer.rights">جميع الحقوق محفوظة.</span></p>
             <p class="footer-meta">
                 <span data-i18n="footer.version">الإصدار 3.0 · آخر تحديث:</span> <span id="last-update"></span>
-                · <a href="dashboard.html" class="admin-link"><i class="fas fa-lock" aria-hidden="true"></i> <span
-                        data-i18n="footer.dashboard">لوحة التحكم</span></a>
             </p>
         </div>
     </footer>

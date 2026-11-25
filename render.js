@@ -174,7 +174,8 @@
         if (!nav) return;
 
         nav.querySelectorAll('[data-dynamic-nav]').forEach(function (a) { a.remove(); });
-        var before = nav.querySelector('a[href="#reviews"]');
+        var beforeReviews = nav.querySelector('a[href="#reviews"]');
+        var afterReelsAnchor = nav.querySelector('a[href="#long"]'); // اللينك يتحط بعد الريلز وقبل الطويل
 
         sections.forEach(function (sec) {
             if (BUILTIN_SECTION_IDS.indexOf(sec.id) !== -1) return;
@@ -183,6 +184,7 @@
             a.className = "nav-link";
             a.textContent = sec.navLabel || sec.title || sec.id;
             a.setAttribute("data-dynamic-nav", "");
+            var before = sec.placement === "after-reels" && afterReelsAnchor ? afterReelsAnchor : beforeReviews;
             nav.insertBefore(a, before);
         });
     }
@@ -211,10 +213,15 @@
             if (el) el.innerHTML = departmentsHTML(sec.departments);
         });
 
+        // الأقسام الإضافية: placement "after-reels" تحت الريلز مباشرة، والباقي بعد الفيديوهات الطويلة
+        var custom = data.sections.filter(function (s) { return BUILTIN_SECTION_IDS.indexOf(s.id) === -1; });
+        var isAfterReels = function (s) { return s.placement === "after-reels"; };
+        var afterReels = document.getElementById("after-reels-sections");
         var dyn = document.getElementById("dynamic-sections-container");
+        if (afterReels) afterReels.innerHTML = custom.filter(isAfterReels).map(sectionHTML).join("");
         if (dyn) {
-            dyn.innerHTML = data.sections
-                .filter(function (s) { return BUILTIN_SECTION_IDS.indexOf(s.id) === -1; })
+            dyn.innerHTML = custom
+                .filter(function (s) { return !afterReels || !isAfterReels(s); })
                 .map(sectionHTML)
                 .join("");
         }
